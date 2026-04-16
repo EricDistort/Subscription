@@ -79,8 +79,8 @@ export default function ProfileScreen({ navigation }: any) {
   const [referrerName, setReferrerName] = useState('N/A');
   const [referrerAccNum, setReferrerAccNum] = useState<string | null>(null);
 
-  // 🎨 NEON GREEN GRADIENT
-  const THEME_GRADIENT = ['#03310b', '#00d435'];
+  // 🎨 CYNAM/MAGENTA GRADIENT
+  const THEME_GRADIENT = ['#ff00aa', '#9000ff'];
 
   useEffect(() => {
     fetchFullProfile();
@@ -170,9 +170,9 @@ export default function ProfileScreen({ navigation }: any) {
   return (
     <ScreenWrapper>
       <StatusBar barStyle="light-content" backgroundColor="#000" />
-      {/* 🌑 Background: Deep Green/Black Gradient */}
+      {/* 🌑 Background: Dark Cyan/Magenta Gradient */}
       <LinearGradient
-        colors={['#000000', '#0a1a10', '#082415']}
+        colors={['#000000', '#0a000e', '#170020']}
         style={{ flex: 1 }}
       >
         <SafeAreaView style={styles.safeArea}>
@@ -188,7 +188,7 @@ export default function ProfileScreen({ navigation }: any) {
               {/* 1. COMPACT HERO SECTION */}
               <View style={styles.heroSection}>
                 <View style={styles.avatarRow}>
-                  {/* 🎨 Avatar Ring: Neon Green */}
+                  {/* 🎨 Avatar Ring: Cyan/Magenta */}
                   <LinearGradient
                     colors={THEME_GRADIENT}
                     style={styles.avatarGradient}
@@ -226,7 +226,7 @@ export default function ProfileScreen({ navigation }: any) {
 
                   <View style={styles.statBox}>
                     <Text style={styles.statLabel}>Referrer Acc</Text>
-                    <Text style={[styles.statValue, { color: '#00ff40' }]}>
+                    <Text style={[styles.statValue, { color: '#ff00aa' }]}>
                       {referrerAccNum || 'N/A'}
                     </Text>
                   </View>
@@ -364,7 +364,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   avatar: { width: '100%', height: '100%', borderRadius: s(36) },
-  avatarPlaceholder: { color: '#00ff40', fontSize: ms(24), fontWeight: 'bold' },
+  avatarPlaceholder: { color: '#ff00aa', fontSize: ms(24), fontWeight: 'bold' },
   heroInfo: {
     marginLeft: s(18),
     justifyContent: 'center',
@@ -373,7 +373,7 @@ const styles = StyleSheet.create({
     color: '#fff', // White title for readability
     fontSize: ms(24),
     fontWeight: '800',
-    letterSpacing: 0.5,
+    letterSpacing: ms(0.5),
   },
   heroSubtitle: {
     color: 'rgba(255,255,255,0.5)',
@@ -393,7 +393,7 @@ const styles = StyleSheet.create({
     paddingVertical: vs(12),
     paddingHorizontal: s(14),
     borderWidth: 1,
-    borderColor: 'rgba(0, 255, 64, 0.1)', // Subtle Green Border
+    borderColor: 'rgba(255, 0, 170, 0.1)', // Subtle Cyan Border
   },
   statLabel: {
     color: '#888',
@@ -417,16 +417,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  // 🎨 CHANGED: Label Color to Neon Green
+  // 🎨 CHANGED: Label Color to Cyan
   label: {
-    color: '#00ff40',
+    color: '#ff00aa',
     fontSize: ms(10),
     fontWeight: '800',
     marginBottom: vs(8),
     marginLeft: s(2),
-    letterSpacing: 0.5,
+    letterSpacing: ms(0.5),
   },
-  // 🎨 CHANGED: Input Border to Green Tint
+  // 🎨 CHANGED: Input Border to Cyan Tint
   input: {
     backgroundColor: '#000',
     borderRadius: ms(12),
@@ -435,7 +435,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: ms(14),
     borderWidth: 1,
-    borderColor: 'rgba(0, 255, 64, 0.2)',
+    borderColor: 'rgba(255, 0, 170, 0.2)',
   },
   requiredInput: {
     borderColor: 'rgba(255, 69, 0, 0.5)', // Red/Orange for required
@@ -450,10 +450,10 @@ const styles = StyleSheet.create({
   /* BUTTON */
   buttonWrapper: {
     marginTop: vs(15),
-    shadowColor: '#00ff40',
-    shadowOffset: { width: 0, height: 4 },
+    shadowColor: '#ff00aa',
+    shadowOffset: { width: 0, height: vs(4) },
     shadowOpacity: 0.3,
-    shadowRadius: 10,
+    shadowRadius: ms(10),
     elevation: 8,
     width: '100%',
     justifyContent: 'center',
@@ -468,9 +468,9 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   saveBtnText: {
-    color: '#fff', // White text on Green Button
+    color: '#fff', // White text on Cyan/Magenta Button
     fontSize: ms(15),
     fontWeight: '900',
-    letterSpacing: 1,
+    letterSpacing: ms(1),
   },
 });

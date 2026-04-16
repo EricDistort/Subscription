@@ -92,8 +92,8 @@ export default function FeedScreen() {
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
-  // 🎨 NEON GREEN GRADIENT
-  const THEME_GRADIENT = ['#03310b', '#00d435'];
+  // 🎨 CYAN/MAGENTA GRADIENT
+  const THEME_GRADIENT = ['#ff00aa', '#9000ff'];
 
   const fetchFeeds = async () => {
     setLoading(true);
@@ -131,7 +131,7 @@ export default function FeedScreen() {
 
     return (
       <PopCard style={styles.cardContainer}>
-        {/* 🎨 Shadow color adjusted to Green */}
+        {/* 🎨 Shadow color adjusted to Cyan */}
         <View style={styles.cardShadow} />
         <View style={styles.card}>
           <View style={styles.mediaContainer}>
@@ -167,7 +167,7 @@ export default function FeedScreen() {
             </View>
           </View>
           <View style={styles.contentContainer}>
-            {/* 🎨 Accent line updated to Green Gradient */}
+            {/* 🎨 Accent line updated to Cyan/Magenta Gradient */}
             <LinearGradient
               colors={THEME_GRADIENT}
               start={{ x: 0, y: 0 }}
@@ -186,9 +186,9 @@ export default function FeedScreen() {
   return (
     <ScreenWrapper>
       <StatusBar barStyle="light-content" backgroundColor="#000" />
-      {/* 🌑 Background: Deep Green/Black Gradient */}
+      {/* 🌑 Background: Dark Cyan/Magenta Gradient */}
       <LinearGradient
-        colors={['#000000', '#0a1a10', '#082415']}
+        colors={['#000000', '#0a000e', '#170020']}
         style={{ flex: 1 }}
       >
         <SafeAreaView style={styles.safeArea}>
@@ -200,7 +200,7 @@ export default function FeedScreen() {
 
             {loading && !refreshing ? (
               <View style={styles.loaderContainer}>
-                <ActivityIndicator size="large" color="#00ff40" />
+                <ActivityIndicator size="large" color="#ff00aa" />
               </View>
             ) : (
               <FlatList
@@ -212,8 +212,8 @@ export default function FeedScreen() {
                   <RefreshControl
                     refreshing={refreshing}
                     onRefresh={onRefresh}
-                    tintColor="#00ff40"
-                    colors={['#00ff40', '#00d435']}
+                    tintColor="#ff00aa"
+                    colors={['#ff00aa', '#9000ff']}
                     progressBackgroundColor="#1a1a1a"
                   />
                 }
@@ -250,8 +250,8 @@ const styles = StyleSheet.create({
   mainTitle: {
     fontSize: ms(28),
     fontWeight: '800',
-    color: '#0fff2f',
-    letterSpacing: -1,
+    color: '#ff00aa', // Cyan
+    letterSpacing: ms(-1),
   },
   /* Webinar Button Styles */
   webinarButton: {
@@ -260,14 +260,14 @@ const styles = StyleSheet.create({
     paddingVertical: vs(6),
     paddingHorizontal: s(12),
     borderRadius: ms(20),
-    shadowColor: '#00ff40',
-    shadowOffset: { width: 0, height: 2 },
+    shadowColor: '#ff00aa',
+    shadowOffset: { width: 0, height: vs(2) },
     shadowOpacity: 0.3,
-    shadowRadius: 5,
+    shadowRadius: ms(5),
     elevation: 5,
   },
   webinarText: {
-    color: '#d6ffdc', // Green text on Green background
+    color: '#ff00aa', // Cyan text
     fontWeight: '800',
     fontSize: ms(12),
   },
@@ -286,7 +286,7 @@ const styles = StyleSheet.create({
     left: s(15),
     right: s(15),
     bottom: -vs(5),
-    backgroundColor: '#00b436', // Updated shadow to Green
+    backgroundColor: '#ff00aa', // Updated shadow to Cyan
     borderRadius: ms(24),
     opacity: 0.15,
     transform: [{ scale: 0.95 }],
@@ -297,7 +297,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     elevation: 10,
     borderWidth: 1,
-    borderColor: 'rgba(0, 255, 64, 0.1)',
+    borderColor: 'rgba(255, 0, 170, 0.1)',
   },
 
   /* Media Section */
@@ -328,10 +328,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: s(12),
     borderRadius: ms(20),
     borderWidth: 1,
-    borderColor: 'rgba(0, 255, 64, 0.3)',
+    borderColor: 'rgba(255, 0, 170, 0.3)', // Cyan Border
   },
   dateText: {
-    color: '#00ff40',
+    color: '#ff00aa', // Cyan Text
     fontSize: ms(12),
     fontWeight: '700',
   },
@@ -348,11 +348,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: ms(22),
     fontWeight: '800',
-    color: '#0fff2f',
+    color: '#ff00aa', // Cyan Text
     lineHeight: ms(28),
     textShadowColor: 'rgba(0,0,0,0.75)',
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 4,
+    textShadowOffset: { width: 0, height: vs(2) },
+    textShadowRadius: ms(4),
   },
 
   /* Content Body */
@@ -369,7 +369,7 @@ const styles = StyleSheet.create({
   },
   body: {
     fontSize: ms(14),
-    color: 'rgba(216, 255, 218, 0.4)',
+    color: 'rgba(255, 255, 255, 0.4)',
     lineHeight: ms(22),
     fontWeight: '400',
   },

@@ -65,13 +65,13 @@ export default function TransactionListScreen() {
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
-  // --- 🎨 FOUNDRY THEME PALETTES (Modified to Neon Green) ---
-  // Green for Transactions
-  const THEME_GRADIENT = ['#03310b', '#00d435'];
-  // Bronze/Orange for Feeds (Left this one somewhat distinct but complementary)
-  const FEED_GRADIENT = ['#008000', '#0a1a10'];
-  // Dark Green for Products
-  const PRODUCT_GRADIENT = ['#00ff40', '#03310b'];
+  // --- 🎨 FOUNDRY THEME PALETTES (Modified to Cyan/Magenta) ---
+  // Cyan for Transactions
+  const THEME_GRADIENT = ['#ff00aa', '#9000ff'];
+  // Magenta/Dark for Feeds
+  const FEED_GRADIENT = ['#9000ff', '#1a001a'];
+  // Dark Cyan for Products
+  const PRODUCT_GRADIENT = ['#800080', '#ff00aa'];
 
   const fetchData = async () => {
     if (!user?.account_number) return;
@@ -163,7 +163,7 @@ export default function TransactionListScreen() {
           {/* Card Container simulating a dark metal plate */}
           <View style={styles.cardContainer}>
             <LinearGradient
-              colors={['#082415', '#000000']} // Dark Green Gradient
+              colors={['#1a001a', '#000000']} // Dark Cyan Gradient
               style={styles.cardGradient}
             >
               <View style={styles.cardContent}>
@@ -185,8 +185,8 @@ export default function TransactionListScreen() {
                   <Text
                     style={[
                       styles.amount,
-                      // Adjusted for neon green theme
-                      { color: isSent ? '#FF4500' : '#00ff40' },
+                      // Adjusted for neon cyan/magenta theme
+                      { color: isSent ? '#9000ff' : '#ff00aa' },
                     ]}
                   >
                     {isSent ? '-' : '+'}${Math.abs(item.amount)}
@@ -218,7 +218,7 @@ export default function TransactionListScreen() {
         >
           <View style={styles.cardContainer}>
             <LinearGradient
-              colors={['#0a1a10', '#000000']}
+              colors={['#1a001a', '#000000']} // Dark Magenta Gradient
               style={styles.cardGradient}
             >
               <View style={styles.cardContent}>
@@ -248,13 +248,15 @@ export default function TransactionListScreen() {
                   <Text style={styles.feedTitle} numberOfLines={1}>
                     {item.title}
                   </Text>
-                  <Text style={[styles.dateText, { color: '#00ff40' }]}>
+                  <Text style={[styles.dateText, { color: '#9000ff' }]}>
                     {new Date(item.created_at).toLocaleDateString()} • News
                   </Text>
                 </View>
 
                 <View style={styles.amountColumn}>
-                  <Text style={styles.arrowIndicator}>›</Text>
+                  <Text style={[styles.arrowIndicator, { color: '#9000ff' }]}>
+                    ›
+                  </Text>
                 </View>
               </View>
             </LinearGradient>
@@ -272,7 +274,7 @@ export default function TransactionListScreen() {
         >
           <View style={styles.cardContainer}>
             <LinearGradient
-              colors={['#082415', '#000000']}
+              colors={['#1a001a', '#000000']} // Dark Cyan Gradient
               style={styles.cardGradient}
             >
               <View style={styles.cardContent}>
@@ -299,14 +301,14 @@ export default function TransactionListScreen() {
                   <Text style={styles.feedTitle} numberOfLines={1}>
                     {item.name}
                   </Text>
-                  <Text style={[styles.dateText, { color: '#00ff40' }]}>
+                  <Text style={[styles.dateText, { color: '#ff00aa' }]}>
                     New Arrival • Store
                   </Text>
                 </View>
 
                 {/* Price */}
                 <View style={styles.amountColumn}>
-                  <Text style={[styles.amount, { color: '#00ff40' }]}>
+                  <Text style={[styles.amount, { color: '#ff00aa' }]}>
                     ${item.price}
                   </Text>
                 </View>
@@ -320,9 +322,9 @@ export default function TransactionListScreen() {
 
   return (
     <ScreenWrapper>
-      {/* 🌑 Background: Deep Green/Black */}
+      {/* 🌑 Background: Dark Cyan/Magenta */}
       <LinearGradient
-        colors={['#000000', '#0a1a10', '#082415']}
+        colors={['#000000', '#0a000e', '#170020']}
         style={styles.background}
       >
         <SafeAreaView style={styles.safeArea}>
@@ -342,7 +344,7 @@ export default function TransactionListScreen() {
 
             {loading && !refreshing ? (
               <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#00ff40" />
+                <ActivityIndicator size="large" color="#ff00aa" />
               </View>
             ) : (
               <FlatList
@@ -355,8 +357,8 @@ export default function TransactionListScreen() {
                   <RefreshControl
                     refreshing={refreshing}
                     onRefresh={onRefresh}
-                    tintColor="#00ff40"
-                    colors={['#00ff40', '#00d435']}
+                    tintColor="#ff00aa"
+                    colors={['#ff00aa', '#9000ff']}
                     progressBackgroundColor="#1c140d"
                   />
                 }
@@ -391,15 +393,15 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: ms(28),
     fontWeight: '800',
-    color: '#00ff40', // Neon Green
-    letterSpacing: 2,
+    color: '#ff00aa', // Cyan
+    letterSpacing: ms(2),
   },
   headerSubtitle: {
     fontSize: ms(10),
     color: '#8B8B8B', // Grey
     marginTop: vs(4),
     marginBottom: vs(10),
-    letterSpacing: 1,
+    letterSpacing: ms(1),
     fontWeight: '600',
   },
   headerLine: {
@@ -420,16 +422,16 @@ const styles = StyleSheet.create({
   /* Card Base */
   cardContainer: {
     borderRadius: ms(25), // Rounded corners
-    shadowColor: '#00ff40',
-    shadowOffset: { width: 0, height: 4 },
+    shadowColor: '#ff00aa',
+    shadowOffset: { width: 0, height: vs(4) },
     shadowOpacity: 0.1,
-    shadowRadius: 5,
+    shadowRadius: ms(5),
     elevation: 3,
   },
   cardGradient: {
     borderRadius: ms(25),
     borderWidth: 1,
-    borderColor: 'rgba(0, 255, 64, 0.15)', // Subtle green border
+    borderColor: 'rgba(255, 0, 170, 0.15)', // Subtle cyan border
   },
   cardContent: {
     flexDirection: 'row',
@@ -445,12 +447,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: s(12),
-    backgroundColor: 'rgba(0, 255, 64, 0.1)', // Green tint bg
+    backgroundColor: 'rgba(255, 0, 170, 0.1)', // Cyan tint bg
     borderWidth: 1,
-    borderColor: 'rgba(0, 255, 64, 0.2)',
+    borderColor: 'rgba(255, 0, 170, 0.2)',
   },
   iconText: {
-    color: '#00ff40',
+    color: '#ff00aa',
     fontSize: ms(20),
     fontWeight: 'bold',
   },
@@ -481,12 +483,12 @@ const styles = StyleSheet.create({
   },
   playBadge: {
     position: 'absolute',
-    bottom: 2,
-    right: 2,
+    bottom: vs(2),
+    right: s(2),
     backgroundColor: 'rgba(0,0,0,0.8)',
-    borderRadius: 4,
-    width: 12,
-    height: 12,
+    borderRadius: ms(4),
+    width: s(12),
+    height: s(12),
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -499,18 +501,18 @@ const styles = StyleSheet.create({
   username: {
     fontSize: ms(14),
     fontWeight: '700',
-    color: '#0fff2f',
+    color: '#ff00aa', // Cyan
     marginBottom: vs(2),
   },
   feedTitle: {
     fontSize: ms(13),
     fontWeight: 'bold',
-    color: '#00ff22',
+    color: '#ff00aa', // Cyan
     marginBottom: vs(2),
   },
   dateText: {
     fontSize: ms(10),
-    color: 'rgba(216, 255, 218, 0.4)',
+    color: 'rgba(255, 230, 249, 0.4)',
     fontWeight: '500',
   },
 
@@ -530,10 +532,10 @@ const styles = StyleSheet.create({
     color: '#666',
   },
   arrowIndicator: {
-    color: '#00ff40',
+    color: '#ff00aa',
     fontSize: ms(24),
     fontWeight: '300',
-    marginTop: -4,
+    marginTop: vs(-4),
   },
 
   /* Empty State */
@@ -547,9 +549,9 @@ const styles = StyleSheet.create({
     marginBottom: vs(10),
   },
   emptyText: {
-    color: '#00ff40',
+    color: '#ff00aa',
     fontSize: ms(14),
-    letterSpacing: 2,
+    letterSpacing: ms(2),
     fontWeight: '700',
   },
 });

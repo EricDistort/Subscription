@@ -48,10 +48,10 @@ const StoreStack = createNativeStackNavigator();
 const FeedStack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-// 🎨 CHANGED: Neon Green Theme Gradient
-const THEME_GRADIENT = ['#03310b', '#00d435'];
+// 🎨 CHANGED: Cyan/Magenta Theme Gradient
+const THEME_GRADIENT = ['#ff00aa', '#9000ff'];
 
-// 1️⃣ UPDATED THEME FOR GREEN ACCENTS
+// 1️⃣ UPDATED THEME FOR CYAN ACCENTS
 const MyDarkTheme = {
   ...NavigationDarkTheme,
   colors: {
@@ -59,8 +59,8 @@ const MyDarkTheme = {
     background: '#000000',
     card: '#000000',
     text: '#ffffff',
-    border: '#0a1a10',
-    notification: '#00ff40', // Neon green notifications
+    border: '#1a0011', // Dark Cyan border
+    notification: '#ff00aa', // Cyan notifications
   },
 };
 
@@ -294,8 +294,8 @@ const styles = StyleSheet.create({
   tabBar: {
     position: 'absolute',
     bottom: vs(20),
-    left: s(0),
-    right: s(0),
+    left: 0,
+    right: 0,
     height: vs(65),
     borderRadius: ms(35),
     backgroundColor: 'transparent',
@@ -309,7 +309,9 @@ const styles = StyleSheet.create({
     flex: 1,
     borderRadius: ms(35),
     elevation: 10,
-    shadowColor: '#00ff40', // Neon green shadow
+    shadowColor: '#ff00aa',
+    shadowOpacity: 0.3,
+    shadowRadius: ms(8),
   },
   tabBtnContainer: {
     flex: 1,
@@ -330,15 +332,15 @@ const styles = StyleSheet.create({
   activeIcon: {
     width: s(32),
     height: s(32),
-    tintColor: '#bfffaf', // White icon on green background looks good
+    tintColor: '#ffffff', // White icon on Cyan/Magenta background
   },
   inactiveIcon: {
-    tintColor: 'rgba(255, 255, 255, 0.25)', // Semi-transparent white icons for inactive
+    tintColor: 'rgba(255, 255, 255, 0.4)', // Semi-transparent white icons for inactive
   },
   activeDot: {
     width: s(15),
     height: s(4),
     borderRadius: s(2.5),
-    backgroundColor: '#bfffaf', // White dot on green
+    backgroundColor: '#ffffff', // White dot
   },
 });

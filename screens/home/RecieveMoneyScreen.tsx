@@ -64,8 +64,8 @@ export default function DirectReferralsScreen() {
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
-  // 🎨 NEON GREEN GRADIENT
-  const THEME_GRADIENT = ['#03310b', '#00d435'];
+  // 🎨 CYAN/MAGENTA GRADIENT
+  const THEME_GRADIENT = ['#ff00aa', '#9000ff'];
 
   const fetchReferrals = async () => {
     if (!user?.account_number) return;
@@ -93,9 +93,9 @@ export default function DirectReferralsScreen() {
   return (
     <ScreenWrapper>
       <StatusBar barStyle="light-content" backgroundColor="#000" />
-      {/* 🌑 Background: Deep Green/Black Gradient */}
+      {/* 🌑 Background: Dark Cyan/Magenta Gradient */}
       <LinearGradient
-        colors={['#000000', '#0a1a10', '#082415']}
+        colors={['#000000', '#0a000e', '#170020']}
         style={{ flex: 1 }}
       >
         <SafeAreaView style={styles.safeArea}>
@@ -114,7 +114,7 @@ export default function DirectReferralsScreen() {
 
             {loading && !refreshing ? (
               <View style={styles.loaderContainer}>
-                <ActivityIndicator size="large" color="#00ff40" />
+                <ActivityIndicator size="large" color="#ff00aa" />
               </View>
             ) : referrals.length === 0 ? (
               <View style={styles.emptyContainer}>
@@ -131,8 +131,8 @@ export default function DirectReferralsScreen() {
                   <RefreshControl
                     refreshing={refreshing}
                     onRefresh={onRefresh}
-                    tintColor="#00ff40"
-                    colors={['#00ff40', '#00d435']}
+                    tintColor="#ff00aa"
+                    colors={['#ff00aa', '#9000ff']}
                     progressBackgroundColor="#1c140d"
                   />
                 }
@@ -225,8 +225,8 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: ms(28),
     fontWeight: '900',
-    color: '#00ff40', // Neon Green
-    letterSpacing: 0.5,
+    color: '#ff00aa', // Cyan
+    letterSpacing: ms(0.5),
     textTransform: 'uppercase',
     marginTop: vs(15),
   },
@@ -247,22 +247,22 @@ const styles = StyleSheet.create({
 
   /* Card */
   cardContainer: {
-    marginBottom: vs(15),
-    shadowColor: '#00ff40',
-    shadowOffset: { width: 0, height: 4 },
+    marginBottom: vs(10),
+    shadowColor: '#ff00aa',
+    shadowOffset: { width: 0, height: vs(4) },
     shadowOpacity: 0.1,
-    shadowRadius: 8,
+    shadowRadius: ms(8),
     elevation: 3,
   },
   card: {
     backgroundColor: 'rgba(255,255,255,0.03)',
-    borderRadius: ms(16),
+    borderRadius: ms(30),
     padding: s(16),
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(0, 255, 64, 0.15)', // Green Border
+    borderColor: 'rgba(255, 0, 170, 0.15)', // Cyan Border
   },
 
   /* Left Side */
@@ -274,21 +274,20 @@ const styles = StyleSheet.create({
     width: s(50),
     height: s(50),
     borderRadius: s(25),
-    backgroundColor: 'rgba(0, 255, 64, 0.1)',
+    backgroundColor: 'rgba(255, 0, 170, 0.1)',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: s(12),
     borderWidth: 1,
-    borderColor: 'rgba(0, 255, 64, 0.3)',
+    borderColor: 'rgba(255, 0, 170, 0.3)',
   },
   avatarImage: {
     width: s(50),
     height: s(50),
     borderRadius: s(25),
-    
   },
   avatarText: {
-    color: '#00ff40',
+    color: '#ff00aa',
     fontSize: ms(16),
     fontWeight: '800',
   },
@@ -299,19 +298,19 @@ const styles = StyleSheet.create({
     marginBottom: vs(4),
   },
   statusBadge: {
-    backgroundColor: 'rgba(0, 255, 64, 0.1)', // Green tint for "View Network"
+    backgroundColor: 'rgba(255, 0, 170, 0.1)', // Cyan tint for "View Network"
     paddingHorizontal: s(6),
     paddingVertical: vs(2),
     borderRadius: ms(4),
     alignSelf: 'flex-start',
     borderWidth: 1,
-    borderColor: 'rgba(0, 255, 64, 0.2)',
+    borderColor: 'rgba(255, 0, 170, 0.2)',
   },
   statusText: {
-    color: '#00ff40',
+    color: '#ff00aa',
     fontSize: ms(9),
     fontWeight: '800',
-    letterSpacing: 0.5,
+    letterSpacing: ms(0.5),
   },
 
   /* Right Side */
@@ -325,7 +324,7 @@ const styles = StyleSheet.create({
     marginBottom: vs(2),
   },
   businessAmount: {
-    color: '#00ff40',
+    color: '#ff00aa',
     fontSize: ms(18),
     fontWeight: '800',
   },

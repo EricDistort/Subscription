@@ -57,8 +57,9 @@ export default function LeaderboardScreen() {
   );
 
   const renderItem = ({ item, index }: { item: any; index: number }) => {
-    const rankColor = '#00ff40';
-    const cardBackground = ['#05120a', '#000000'];
+    // 🎨 CHANGED: Rank Color to Cyan
+    const rankColor = '#ff00aa';
+    const cardBackground = ['#051212', '#000000']; // Adjusted to darker cyan/black
 
     return (
       <View style={styles.cardContainer}>
@@ -102,7 +103,11 @@ export default function LeaderboardScreen() {
 
   return (
     <ScreenWrapper>
-      <LinearGradient colors={['#000000', '#0a1a10']} style={styles.background}>
+      {/* 🌑 Background: Dark Cyan/Magenta Gradient */}
+      <LinearGradient
+        colors={['#000000', '#0a000e', '#170020']}
+        style={styles.background}
+      >
         <SafeAreaView style={styles.safeArea}>
           <StatusBar barStyle="light-content" backgroundColor="#000" />
 
@@ -110,7 +115,7 @@ export default function LeaderboardScreen() {
 
           {loading ? (
             <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" color="#00ff40" />
+              <ActivityIndicator size="large" color="#ff00aa" />
             </View>
           ) : (
             <View style={styles.fixedListWrapper}>
@@ -144,10 +149,12 @@ const styles = StyleSheet.create({
     marginBottom: vs(16),
     marginTop: vs(40),
   },
+
   bannerImage: {
     width: '100%',
     height: vs(160),
   },
+
   bannerGradient: {
     position: 'absolute',
     bottom: 0,
@@ -164,15 +171,15 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: ms(28),
     fontWeight: '900',
-    color: '#00ff40',
-    letterSpacing: 2,
+    color: '#ff00aa', // Cyan
+    letterSpacing: ms(2),
   },
   headerSubtitle: {
     fontSize: ms(10),
     color: '#fff',
     marginTop: vs(2),
     marginBottom: vs(8),
-    letterSpacing: 1,
+    letterSpacing: ms(1),
     fontWeight: '700',
   },
   headerLine: {
@@ -188,17 +195,17 @@ const styles = StyleSheet.create({
   cardContainer: {
     marginTop: vs(15),
     borderRadius: ms(20),
-    shadowColor: '#00ff40',
-    shadowOffset: { width: 0, height: 2 },
+    shadowColor: '#ff00aa', // Cyan
+    shadowOffset: { width: 0, height: vs(2) },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowRadius: ms(4),
     elevation: 3,
     overflow: 'visible',
   },
   cardGradient: {
     borderRadius: ms(20),
     borderWidth: 1,
-    borderColor: 'rgba(0, 255, 64, 0.1)',
+    borderColor: 'rgba(255, 0, 170, 0.1)', // Cyan
     overflow: 'visible',
   },
   cardContent: {
@@ -220,13 +227,13 @@ const styles = StyleSheet.create({
 
   avatarContainer: {
     marginRight: s(12),
-    marginTop: -vs(25),
+    marginTop: vs(-25),
     elevation: 5,
     zIndex: 5,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: 0, height: vs(4) },
     shadowOpacity: 0.3,
-    shadowRadius: 4,
+    shadowRadius: ms(4),
   },
   avatar: {
     width: ms(56),
@@ -240,14 +247,14 @@ const styles = StyleSheet.create({
     width: ms(56),
     height: ms(56),
     borderRadius: ms(28),
-    backgroundColor: '#03310b',
+    backgroundColor: '#1a0011', // Dark Cyan
     borderWidth: 2,
-    borderColor: '#00ff40',
+    borderColor: '#ff00aa', // Cyan
     justifyContent: 'center',
     alignItems: 'center',
   },
   avatarPlaceholderText: {
-    color: '#00ff40',
+    color: '#ff00aa', // Cyan
     fontSize: ms(20),
     fontWeight: 'bold',
   },
@@ -259,13 +266,13 @@ const styles = StyleSheet.create({
   username: {
     fontSize: ms(15),
     fontWeight: '800',
-    color: '#0fff2f',
+    color: '#ff00aa', // Cyan
     marginBottom: vs(2),
   },
   amount: {
     fontSize: ms(14),
     fontWeight: 'bold',
-    color: '#c0ffc9ce',
+    color: '#9000ff', // Magenta
   },
 
   arrowColumn: {
@@ -275,6 +282,6 @@ const styles = StyleSheet.create({
   },
   upArrow: {
     fontSize: ms(18),
-    color: '#00ff40',
+    color: '#ff00aa', // Cyan
   },
 });

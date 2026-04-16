@@ -97,8 +97,8 @@ export default function DepositScreen() {
     'Loading instructions...',
   );
 
-  // --- 🎨 NEON GREEN THEME ---
-  const THEME_GRADIENT = ['#03310b', '#00d435']; // Dark Green -> Neon Green
+  // --- 🎨 CYAN/MAGENTA THEME ---
+  const THEME_GRADIENT = ['#ff00aa', '#9000ff']; // Cyan -> Magenta
   const DISABLED_GRADIENT = ['#4a4a4a', '#2b2b2b']; // Grey
 
   // 1. Fetch Company Wallet & User's Fixed Address
@@ -299,7 +299,7 @@ export default function DepositScreen() {
     <ScreenWrapper>
       <StatusBar barStyle="light-content" backgroundColor="#000" />
       <LinearGradient
-        colors={['#000000', '#0a1a10', '#082415']}
+        colors={['#000000', '#0a000e', '#170020']}
         style={{ flex: 1 }}
       >
         <SafeAreaView style={styles.safeArea}>
@@ -370,7 +370,7 @@ export default function DepositScreen() {
                       fixedSenderAddress
                         ? {
                             opacity: 0.5,
-                            backgroundColor: 'rgba(0, 255, 64, 0.05)',
+                            backgroundColor: 'rgba(255, 0, 170, 0.05)',
                           }
                         : {},
                     ]}
@@ -415,7 +415,7 @@ export default function DepositScreen() {
             <View style={styles.historyContainer}>
               <Text style={styles.historyHeader}>Recent History</Text>
               {loadingDeposits ? (
-                <ActivityIndicator color="#00ff40" style={{ marginTop: 20 }} />
+                <ActivityIndicator color="#ff00aa" style={{ marginTop: 20 }} />
               ) : (
                 <FlatList
                   data={deposits}
@@ -453,14 +453,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  successLottie: { width: s(500), height: s(500) },
+  successLottie: { width: s(400), height: s(400) },
   topSection: { marginBottom: vs(20) },
   screenTitle: {
     fontSize: ms(24),
     fontWeight: '800',
-    color: '#00ff40', // Neon Green
+    color: '#ff00aa', // Cyan
     marginBottom: vs(15),
-    letterSpacing: 0.5,
+    letterSpacing: ms(0.5),
     marginTop: vs(15),
   },
   formContainer: {
@@ -468,7 +468,7 @@ const styles = StyleSheet.create({
     borderRadius: ms(20),
     padding: s(15),
     borderWidth: 1,
-    borderColor: 'rgba(0, 255, 64, 0.15)', // Green Tint
+    borderColor: 'rgba(255, 0, 170, 0.15)', // Cyan Tint
   },
   qrRow: { flexDirection: 'row', alignItems: 'center', marginBottom: vs(15) },
   qrWrapper: {
@@ -482,13 +482,13 @@ const styles = StyleSheet.create({
   qrImage: { width: '100%', height: '100%' },
   warningBox: { flex: 1, justifyContent: 'center' },
   warningText: {
-    color: '#00ff40',
+    color: '#ff00aa',
     fontWeight: '700',
     fontSize: ms(12),
     marginBottom: vs(2),
   },
   warningDesc: {
-    color: 'rgba(218, 255, 217, 0.6)',
+    color: 'rgba(255, 230, 249, 0.6)',
     fontSize: ms(11),
     lineHeight: ms(15),
   },
@@ -501,24 +501,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: s(15),
     height: vs(45),
     borderWidth: 1,
-    borderColor: 'rgba(0, 255, 64, 0.3)', // Green Border
+    borderColor: 'rgba(255, 0, 170, 0.3)', // Cyan Border
   },
   walletText: {
-    color: '#00ff40',
+    color: '#ff00aa',
     flex: 1,
     fontSize: ms(13),
     marginRight: s(10),
   },
   copyText: {
-    color: '#00ff40',
+    color: '#ff00aa',
     fontWeight: '700',
     fontSize: ms(12),
-    backgroundColor: 'rgba(0, 255, 64, 0.1)',
+    backgroundColor: 'rgba(255, 0, 170, 0.1)',
     paddingHorizontal: s(10),
     paddingVertical: vs(5),
     borderRadius: ms(14),
     borderWidth: 0.5,
-    borderColor: '#00ff40',
+    borderColor: '#ff00aa',
   },
   input: {
     backgroundColor: '#000',
@@ -528,7 +528,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: ms(14),
     borderWidth: 1,
-    borderColor: 'rgba(0, 255, 64, 0.3)',
+    borderColor: 'rgba(255, 0, 170, 0.3)',
   },
   submitBtn: {
     height: vs(48),
@@ -542,13 +542,13 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: ms(15),
     fontWeight: 'bold',
-    letterSpacing: 0.5,
+    letterSpacing: ms(0.5),
   },
   historyContainer: { flex: 1 },
   historyHeader: {
     fontSize: ms(18),
     fontWeight: '700',
-    color: '#00ff40',
+    color: '#ff00aa',
     marginBottom: vs(10),
   },
   listContent: { paddingBottom: vs(200) },
@@ -561,16 +561,16 @@ const styles = StyleSheet.create({
     padding: s(12),
     marginBottom: vs(8),
     borderWidth: 1,
-    borderColor: 'rgba(0, 255, 64, 0.15)',
+    borderColor: 'rgba(255, 0, 170, 0.15)',
   },
   historyLeft: { flexDirection: 'column' },
   historyAmount: {
-    color: '#0fff2f',
+    color: '#ff00aa',
     fontSize: ms(16),
     fontWeight: 'bold',
     marginBottom: vs(2),
   },
-  historyDate: { color: 'rgba(216, 255, 218, 0.4)', fontSize: ms(11) },
+  historyDate: { color: 'rgba(255, 230, 249, 0.4)', fontSize: ms(11) },
   statusBadge: {
     paddingVertical: vs(4),
     paddingHorizontal: s(8),

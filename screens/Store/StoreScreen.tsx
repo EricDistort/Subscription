@@ -1,35 +1,45 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
-  FlatList,
-  Image,
-  Modal,
   TextInput,
+  StyleSheet,
   Alert,
-  Dimensions,
   SafeAreaView,
-  StatusBar,
+  FlatList,
   ActivityIndicator,
+  StatusBar,
+  KeyboardAvoidingView,
+  Platform,
+  Keyboard,
+  RefreshControl,
   Animated,
   Pressable,
+  Modal,
+  Dimensions,
+  Image,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { supabase } from '../../utils/supabaseClient';
-import { useUser } from '../../utils/UserContext';
-import ScreenWrapper from '../../utils/ScreenWrapper';
+import LottieView from 'lottie-react-native';
 import {
   scale as s,
   verticalScale as vs,
   moderateScale as ms,
 } from 'react-native-size-matters';
+import ScreenWrapper from '../../utils/ScreenWrapper';
+import { useUser } from '../../utils/UserContext';
+import { supabase } from '../../utils/supabaseClient';
 
-const { width } = Dimensions.get('window');
-const cardWidth = width / 2 - s(24);
+const cardWidth = (Dimensions.get('window').width - s(32) - s(8)) / 2;
 
 // --- POP BUTTON COMPONENT ---
-const PopButton = ({ onPress, children, style, disabled }: any) => {
+const PopButton = ({
+  onPress,
+  children,
+  style,
+  disabled,
+  contentStyle,
+}: any) => {
   const scaleValue = useRef(new Animated.Value(1)).current;
 
   const handlePressIn = () => {
@@ -57,7 +67,15 @@ const PopButton = ({ onPress, children, style, disabled }: any) => {
       style={style}
     >
       <Animated.View
-        style={{ transform: [{ scale: scaleValue }], width: '100%' }}
+        style={[
+          {
+            transform: [{ scale: scaleValue }],
+            width: '100%',
+            alignItems: 'center',
+            justifyContent: 'center',
+          },
+          contentStyle,
+        ]}
       >
         {children}
       </Animated.View>
@@ -73,8 +91,8 @@ export default function StoreScreen({ navigation }: any) {
   const [location, setLocation] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // 🎨 CHANGED: Neon Green Gradient
-  const THEME_GRADIENT = ['#03310b', '#00d435'];
+  // 🎨 CHANGED: Cyan/Magenta Gradient
+  const THEME_GRADIENT = ['#ff00aa', '#9000ff'];
 
   useEffect(() => {
     fetchProducts();
@@ -173,9 +191,9 @@ export default function StoreScreen({ navigation }: any) {
   return (
     <ScreenWrapper>
       <StatusBar barStyle="light-content" />
-      {/* 🌑 Background: Deep Green/Black Gradient */}
+      {/* 🌑 Background: Dark Cyan/Magenta Gradient */}
       <LinearGradient
-        colors={['#000000', '#0a1a10', '#082415']}
+        colors={['#000000', '#0a000e', '#170020']}
         style={{ flex: 1 }}
       >
         <SafeAreaView style={styles.safeArea}>
@@ -212,7 +230,7 @@ export default function StoreScreen({ navigation }: any) {
 
                 <View style={styles.modalContent}>
                   <LinearGradient
-                    colors={['#082415', '#000000']}
+                    colors={['#1a0011', '#000000']}
                     style={styles.modalCard}
                   >
                     {selectedProduct && (
@@ -311,8 +329,8 @@ const styles = StyleSheet.create({
   title: {
     fontSize: ms(28),
     fontWeight: '800',
-    color: '#00ff40', // Neon Green
-    letterSpacing: 0.5,
+    color: '#ff00aa', // Cyan
+    letterSpacing: ms(0.5),
   },
   subtitle: {
     color: 'rgba(255,255,255,0.5)',
@@ -322,14 +340,14 @@ const styles = StyleSheet.create({
   historyBtn: {
     paddingVertical: vs(6),
     paddingHorizontal: s(12),
-    backgroundColor: 'rgba(0, 255, 64, 0.1)',
+    backgroundColor: 'rgba(255, 0, 170, 0.1)',
     borderRadius: ms(20),
     borderWidth: 1,
-    borderColor: 'rgba(0, 255, 64, 0.3)',
+    borderColor: 'rgba(255, 0, 170, 0.3)',
   },
   orderList: {
     fontSize: ms(12),
-    color: '#00ff40',
+    color: '#ff00aa',
     fontWeight: '700',
   },
 
@@ -345,10 +363,10 @@ const styles = StyleSheet.create({
   cardContainer: {
     marginBottom: vs(16),
     width: cardWidth,
-    shadowColor: '#00ff40',
-    shadowOffset: { width: 0, height: 4 },
+    shadowColor: '#ff00aa',
+    shadowOffset: { width: 0, height: vs(4) },
     shadowOpacity: 0.15,
-    shadowRadius: 8,
+    shadowRadius: ms(8),
     elevation: 4,
   },
   gradientBorder: {
@@ -384,14 +402,14 @@ const styles = StyleSheet.create({
   name: {
     fontSize: ms(13),
     fontWeight: '700',
-    color: '#0fff2f',
+    color: '#ff00aa',
     flex: 1,
     marginRight: s(4),
   },
   // 🎨 CHANGED: Price Color
   price: {
     fontSize: ms(13),
-    color: '#d6ffdc', // Neon Green
+    color: '#9000ff', // Magenta
     fontWeight: '800',
   },
   buyBtnContainer: {
@@ -406,7 +424,7 @@ const styles = StyleSheet.create({
   },
   // 🎨 CHANGED: Buy Text Color
   buyText: {
-    color: '#fff', // White on Green
+    color: '#fff', // White
     fontWeight: '800',
     fontSize: ms(12),
     textTransform: 'uppercase',
@@ -434,7 +452,7 @@ const styles = StyleSheet.create({
     borderRadius: ms(20),
     padding: s(20),
     borderWidth: 1,
-    borderColor: 'rgba(0, 255, 64, 0.2)', // Green tinted border
+    borderColor: 'rgba(255, 0, 170, 0.2)', // Cyan tinted border
   },
   modalHeader: {
     flexDirection: 'row',
@@ -445,10 +463,10 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: ms(18),
     fontWeight: '800',
-    color: '#00ff40', // Neon Green
+    color: '#ff00aa', // Cyan
   },
   closeIcon: {
-    color: '#00ff40', // Neon Green
+    color: '#ff00aa', // Cyan
     fontSize: ms(20),
     fontWeight: 'bold',
   },
@@ -480,7 +498,7 @@ const styles = StyleSheet.create({
   },
   // 🎨 CHANGED: Summary Price Color
   summaryPrice: {
-    color: '#00ff40', // Neon Green
+    color: '#9000ff', // Magenta
     fontSize: ms(16),
     fontWeight: '800',
   },
@@ -503,7 +521,7 @@ const styles = StyleSheet.create({
     marginBottom: vs(15),
     backgroundColor: '#000',
     borderWidth: 1,
-    borderColor: 'rgba(0, 255, 64, 0.15)', // Green tint
+    borderColor: 'rgba(255, 0, 170, 0.15)', // Cyan tint
     color: '#fff',
     paddingHorizontal: s(15),
     paddingVertical: vs(10),
@@ -522,9 +540,9 @@ const styles = StyleSheet.create({
   },
   // 🎨 CHANGED: Buy Now Text Color
   buyNowText: {
-    color: '#fff', // White on Green
+    color: '#fff', // White
     fontWeight: '900',
     fontSize: ms(16),
-    letterSpacing: 0.5,
+    letterSpacing: ms(0.5),
   },
 });

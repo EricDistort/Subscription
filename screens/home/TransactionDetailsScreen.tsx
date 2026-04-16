@@ -29,8 +29,8 @@ export default function TransactionDetailsScreen() {
 
   const isSent = transaction.sender_acc === user.account_number;
 
-  // 🎨 CHANGED: Neon Green Palette
-  const THEME_GRADIENT = ['#03310b', '#00d435'];
+  // 🎨 CHANGED: Cyan/Magenta Palette
+  const THEME_GRADIENT = ['#ff00aa', '#9000ff'];
 
   // Formatted Data
   const formattedDate = new Date(transaction.created_at).toLocaleDateString();
@@ -45,9 +45,9 @@ export default function TransactionDetailsScreen() {
 
   return (
     <ScreenWrapper>
-      {/* 🌑 Screen Background: Deep Green/Black */}
+      {/* 🌑 Screen Background: Dark Cyan/Magenta Gradient */}
       <LinearGradient
-        colors={['#000000', '#0a1a10', '#082415']}
+        colors={['#000000', '#0a000e', '#170020']}
         style={{ flex: 1 }}
       >
         <StatusBar
@@ -59,7 +59,7 @@ export default function TransactionDetailsScreen() {
           {/* 1️⃣ TOP CONTAINER (Animation Only) */}
           <View style={styles.topContainer}>
             <LinearGradient
-              colors={['rgba(0, 255, 64, 0.2)', 'transparent']}
+              colors={['rgba(255, 0, 170, 0.2)', 'transparent']}
               style={styles.glowBackground}
               start={{ x: 0.5, y: 0.5 }}
               end={{ x: 0.5, y: 1 }}
@@ -91,7 +91,7 @@ export default function TransactionDetailsScreen() {
                   style={[
                     styles.amountText,
                     // 🎨 CHANGED: Using theme colors for amount
-                    { color: isSent ? '#FF4500' : '#00ff40' },
+                    { color: isSent ? '#9000ff' : '#ff00aa' },
                   ]}
                 >
                   {isSent ? '-' : '+'}${Math.abs(transaction.amount).toFixed(2)}
@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: ms(30),
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: 'rgba(0, 255, 64, 0.1)',
+    borderColor: 'rgba(255, 0, 170, 0.1)',
   },
   gradientLine: {
     height: vs(3),
@@ -193,17 +193,17 @@ const styles = StyleSheet.create({
     marginBottom: vs(25),
   },
   statusText: {
-    color: '#00ff40', // Neon Green text
+    color: '#ff00aa', // Cyan text
     fontSize: ms(12),
     fontWeight: '700',
-    letterSpacing: 2,
+    letterSpacing: ms(2),
     marginBottom: vs(4),
     textTransform: 'uppercase',
   },
   amountText: {
     fontSize: ms(36),
     fontWeight: '800',
-    letterSpacing: -0.5,
+    letterSpacing: ms(-0.5),
   },
 
   /* Details Grid */
@@ -234,16 +234,16 @@ const styles = StyleSheet.create({
     marginBottom: vs(2),
   },
   value: {
-    color: '#00ff15',
+    color: '#ff00aa',
     fontSize: ms(15),
     fontWeight: '700',
   },
   valueMono: {
-    color: '#c1ffd0', // Neon Green Ref ID
+    color: '#9000ff', // Magenta Ref ID
     fontSize: ms(14),
     //fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
     fontWeight: '600',
-    letterSpacing: 0.5,
+    letterSpacing: ms(0.5),
   },
   subValue: {
     color: '#888',

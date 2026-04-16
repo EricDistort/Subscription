@@ -90,8 +90,8 @@ export default function WithdrawalScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
-  // 🎨 CHANGED: Neon Green Gradient
-  const THEME_GRADIENT = ['#03310b', '#00d435'];
+  // 🎨 CHANGED: Cyan/Magenta Gradient
+  const THEME_GRADIENT = ['#ff00aa', '#9000ff'];
 
   const fetchUserBalance = async () => {
     if (!user?.id) return;
@@ -172,7 +172,7 @@ export default function WithdrawalScreen() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'approved':
-        return '#00ff40'; // Neon Green
+        return '#00ff88'; // Green
       case 'pending':
         return '#FFD700'; // Yellow/Gold
       case 'rejected':
@@ -313,9 +313,9 @@ export default function WithdrawalScreen() {
   return (
     <ScreenWrapper>
       <StatusBar barStyle="light-content" backgroundColor="#000" />
-      {/* 🌑 Background: Deep Green/Black Gradient */}
+      {/* 🌑 Background: Dark Cyan/Magenta Gradient */}
       <LinearGradient
-        colors={['#000000', '#0a1a10', '#082415']}
+        colors={['#000000', '#0a000e', '#170020']}
         style={{ flex: 1 }}
       >
         <SafeAreaView style={styles.safeArea}>
@@ -354,8 +354,8 @@ export default function WithdrawalScreen() {
                   <RefreshControl
                     refreshing={refreshing}
                     onRefresh={onRefresh}
-                    tintColor="#00ff40"
-                    colors={['#00ff40', '#00d435']}
+                    tintColor="#ff00aa"
+                    colors={['#ff00aa', '#9000ff']}
                     progressBackgroundColor="#1a1a1a"
                   />
                 }
@@ -368,7 +368,7 @@ export default function WithdrawalScreen() {
                     </View>
                   ) : (
                     <ActivityIndicator
-                      color="#00ff40"
+                      color="#ff00aa"
                       style={{ marginTop: 20 }}
                     />
                   )
@@ -398,8 +398,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   successLottie: {
-    width: s(500),
-    height: s(500),
+    width: s(400),
+    height: s(400),
   },
   headerContainer: {
     paddingHorizontal: s(20),
@@ -410,9 +410,9 @@ const styles = StyleSheet.create({
   pageTitle: {
     fontSize: ms(24),
     fontWeight: '900',
-    color: '#00ff40', // Neon Green
+    color: '#ff00aa', // Cyan
     marginBottom: vs(15),
-    letterSpacing: 0.5,
+    letterSpacing: ms(0.5),
     marginTop: vs(15),
   },
   // 🎨 CHANGED: Shadow Color
@@ -420,10 +420,10 @@ const styles = StyleSheet.create({
     borderRadius: ms(35),
     padding: s(20),
     marginBottom: vs(20),
-    shadowColor: '#00ff40',
-    shadowOffset: { width: 0, height: 8 },
+    shadowColor: '#ff00aa',
+    shadowOffset: { width: 0, height: vs(8) },
     shadowOpacity: 0.3,
-    shadowRadius: 12,
+    shadowRadius: ms(12),
     elevation: 8,
   },
   cardContent: {
@@ -433,7 +433,7 @@ const styles = StyleSheet.create({
   },
   // 🎨 CHANGED: Text Color
   balanceLabel: {
-    color: 'rgba(255,255,255,0.6)', // White text on Green card
+    color: 'rgba(255,255,255,0.6)', // White text on Cyan/Magenta card
     fontSize: ms(12),
     fontWeight: '700',
     marginBottom: vs(4),
@@ -441,7 +441,7 @@ const styles = StyleSheet.create({
   },
   // 🎨 CHANGED: Text Color
   balanceValue: {
-    color: '#d5ffcd', // White text on Green card
+    color: '#fff', // White text
     fontSize: ms(32),
     fontWeight: '800',
   },
@@ -473,10 +473,10 @@ const styles = StyleSheet.create({
     borderRadius: ms(20),
     height: vs(50),
     paddingHorizontal: s(15),
-    color: '#00ff40', // Neon Green
+    color: '#ff00aa', // Cyan
     fontSize: ms(15),
     borderWidth: 1,
-    borderColor: 'rgba(0, 255, 64, 0.2)', // Green Border
+    borderColor: 'rgba(255, 0, 170, 0.2)', // Cyan Border
   },
   amountInputContainer: {
     flexDirection: 'row',
@@ -486,26 +486,26 @@ const styles = StyleSheet.create({
     height: vs(50),
     paddingRight: 0,
     borderWidth: 1,
-    borderColor: 'rgba(0, 255, 64, 0.2)',
+    borderColor: 'rgba(255, 0, 170, 0.2)',
   },
   // 🎨 CHANGED: Max Button Colors
   maxText: {
-    color: '#00ff40', // Neon Green
+    color: '#ff00aa', // Cyan
     fontWeight: '800',
     fontSize: ms(12),
-    backgroundColor: 'rgba(0, 255, 64, 0.1)', // Green tint
+    backgroundColor: 'rgba(255, 0, 170, 0.1)', // Cyan tint
     paddingHorizontal: s(10),
     paddingVertical: vs(5),
     borderRadius: ms(14),
     borderWidth: 0.5,
-    borderColor: '#00ff40',
+    borderColor: '#ff00aa',
   },
   submitBtnContainer: {
     marginTop: vs(5),
-    shadowColor: '#00ff40', // Neon Green Shadow
-    shadowOffset: { width: 0, height: 4 },
+    shadowColor: '#ff00aa', // Cyan Shadow
+    shadowOffset: { width: 0, height: vs(4) },
     shadowOpacity: 0.3,
-    shadowRadius: 5,
+    shadowRadius: ms(5),
     elevation: 5,
     width: '100%',
   },
@@ -518,10 +518,10 @@ const styles = StyleSheet.create({
   },
   // 🎨 CHANGED: Button Text Color
   btnText: {
-    color: '#c3ffc1', // White text on Green Button
+    color: '#fff', // White text
     fontSize: ms(14),
     fontWeight: '900',
-    letterSpacing: 1,
+    letterSpacing: ms(1),
   },
   historyHeader: {
     flexDirection: 'row',
@@ -532,7 +532,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: ms(16),
     fontWeight: '700',
-    color: '#00ff40', // Neon Green
+    color: '#ff00aa', // Cyan
     marginRight: s(10),
   },
   line: {
@@ -551,7 +551,7 @@ const styles = StyleSheet.create({
     borderRadius: ms(20),
     padding: s(12),
     borderWidth: 1,
-    borderColor: 'rgba(0, 255, 64, 0.1)', // Green Border
+    borderColor: 'rgba(255, 0, 170, 0.1)', // Cyan Border
   },
   historyRow: {
     flexDirection: 'row',
@@ -559,13 +559,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   historyAmount: {
-    color: '#0fff2f',
+    color: '#ff00aa',
     fontSize: ms(16),
     fontWeight: '700',
     marginBottom: vs(2),
   },
   historyDate: {
-    color: 'rgba(216, 255, 218, 0.4)',
+    color: 'rgba(255, 230, 249, 0.4)',
     fontSize: ms(11),
   },
   statusBadge: {

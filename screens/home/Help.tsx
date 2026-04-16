@@ -10,10 +10,12 @@ import {
   Alert,
   StatusBar,
   Keyboard,
-  Platform,
   Animated,
   Pressable,
+  AppState,
 } from 'react-native';
+// MAKE SURE THIS IS IN YOUR APP.TSX AS WELL:
+import 'react-native-url-polyfill/auto';
 import { supabase } from '../../utils/supabaseClient';
 import { useUser } from '../../utils/UserContext';
 import LinearGradient from 'react-native-linear-gradient';
@@ -65,10 +67,29 @@ export default function SupportScreen() {
   const [messages, setMessages] = useState<any[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(true);
+
+  // 🚨 State to track if WebSocket is actually alive
+  const [isSocketActive, setIsSocketActive] = useState(false);
   const flatListRef = useRef<FlatList>(null);
 
-  // 🎨 NEON GREEN GRADIENT
-  const THEME_GRADIENT = ['#03310b', '#00d435'];
+  const THEME_GRADIENT = ['#ff00aa', '#9000ff'];
+
+  // --- FETCH MESSAGES FUNCTION ---
+  const fetchMessages = async (convId: number) => {
+    try {
+      const { data, error } = await supabase
+        .from('messages')
+        .select('*')
+        .eq('conversation_id', convId)
+        .order('created_at', { ascending: true });
+
+      if (!error && data) {
+        setMessages(data);
+      }
+    } catch (err) {
+      console.log('Fetch error:', err);
+    }
+  };
 
   // 1. Initialize Chat
   useEffect(() => {
@@ -116,36 +137,72 @@ export default function SupportScreen() {
     };
   }, [user]);
 
-  // 2. Real-time Subscription
+  // 2. REALTIME WEBSOCKET SUBSCRIPTION
   useEffect(() => {
     if (!conversationId) return;
 
+    const channelName = `chat_room_${conversationId}`;
     const channel = supabase
-      .channel(`conversation_sub:${conversationId}`)
+      .channel(channelName)
       .on(
         'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'messages',
-          filter: `conversation_id=eq.${conversationId}`,
-        },
+        { event: 'INSERT', schema: 'public', table: 'messages' },
         payload => {
-          setMessages(currentMessages => {
-            const exists = currentMessages.find(m => m.id === payload.new.id);
-            if (exists) return currentMessages;
-            return [...currentMessages, payload.new];
-          });
+          if (
+            payload.new &&
+            String(payload.new.conversation_id) === String(conversationId)
+          ) {
+            setMessages(current => {
+              const exists = current.some(
+                m => String(m.id) === String(payload.new.id),
+              );
+              if (!exists) return [...current, payload.new];
+              return current;
+            });
+            // Auto scroll on new message
+            setTimeout(
+              () => flatListRef.current?.scrollToEnd({ animated: true }),
+              200,
+            );
+          }
         },
       )
-      .subscribe();
+      .subscribe(status => {
+        // Track if the socket is actually connected
+        if (status === 'SUBSCRIBED') {
+          setIsSocketActive(true);
+        } else {
+          setIsSocketActive(false);
+        }
+      });
 
     return () => {
       supabase.removeChannel(channel);
     };
   }, [conversationId]);
 
-  // 3. Auto-Scroll logic
+  // 3. 🚨 SMART FALLBACK: If socket dies or quotas are hit, silently pull messages every 4 seconds
+  useEffect(() => {
+    if (!conversationId || isSocketActive) return; // Don't poll if socket works!
+
+    const interval = setInterval(() => {
+      fetchMessages(conversationId);
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [conversationId, isSocketActive]);
+
+  // 4. AppState recovery (Wake up from background)
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', nextAppState => {
+      if (nextAppState === 'active' && conversationId) {
+        fetchMessages(conversationId);
+      }
+    });
+    return () => subscription.remove();
+  }, [conversationId]);
+
+  // 5. Auto-Scroll logic
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
       'keyboardDidShow',
@@ -156,31 +213,16 @@ export default function SupportScreen() {
       },
     );
 
-    if (messages.length > 0) {
+    if (messages.length > 0 && loading === false) {
       setTimeout(
         () => flatListRef.current?.scrollToEnd({ animated: true }),
         200,
       );
     }
+    return () => keyboardDidShowListener.remove();
+  }, [messages, loading]);
 
-    return () => {
-      keyboardDidShowListener.remove();
-    };
-  }, [messages]);
-
-  const fetchMessages = async (convId: number) => {
-    const { data, error } = await supabase
-      .from('messages')
-      .select('*')
-      .eq('conversation_id', convId)
-      .order('created_at', { ascending: true });
-
-    if (!error && data) {
-      setMessages(data);
-    }
-  };
-
-  // 4. Send Message
+  // 6. Send Message
   const sendMessage = async () => {
     if (!input.trim() || !conversationId) return;
 
@@ -204,7 +246,17 @@ export default function SupportScreen() {
       if (error) throw error;
 
       if (data) {
-        setMessages(prev => [...prev, data]);
+        setMessages(prev => {
+          const exists = prev.some(m => String(m.id) === String(data.id));
+          if (!exists) {
+            setTimeout(
+              () => flatListRef.current?.scrollToEnd({ animated: true }),
+              100,
+            );
+            return [...prev, data];
+          }
+          return prev;
+        });
       }
     } catch (error) {
       Alert.alert('Error', 'Failed to send message');
@@ -230,9 +282,8 @@ export default function SupportScreen() {
 
   return (
     <ScreenWrapper>
-      {/* 🌑 Background: Deep Green/Black Gradient */}
       <LinearGradient
-        colors={['#000000', '#0a1a10', '#082415']}
+        colors={['#000000', '#0a000e', '#170020']}
         style={styles.container}
       >
         <StatusBar barStyle="light-content" backgroundColor="#000" />
@@ -246,22 +297,31 @@ export default function SupportScreen() {
             style={styles.headerLine}
           />
           <View style={styles.headerContent}>
-            <Text style={styles.headerTitle}>LIVE SUPPORT</Text>
-            {loading && (
-              <ActivityIndicator
-                size="small"
-                color="#00ff40"
-                style={{ marginLeft: 10 }}
-              />
-            )}
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Text style={styles.headerTitle}>LIVE SUPPORT</Text>
+              {loading && (
+                <ActivityIndicator
+                  size="small"
+                  color="#ff00aa"
+                  style={{ marginLeft: 10 }}
+                />
+              )}
+            </View>
+            {/* Small subtle dot to let you know if it's using Socket (Green) or Backup Sync (Yellow) */}
+            <View
+              style={[
+                styles.statusDot,
+                { backgroundColor: isSocketActive ? '#00ffaa' : '#ffaa00' },
+              ]}
+            />
           </View>
         </View>
 
         {/* --- CHAT AREA --- */}
         <KeyboardAvoidingView
           style={{ flex: 1 }}
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+          behavior="height"
+          keyboardVerticalOffset={20}
         >
           <View style={styles.listContainer}>
             <FlatList
@@ -300,7 +360,6 @@ export default function SupportScreen() {
                 onSubmitEditing={sendMessage}
                 multiline={false}
               />
-              {/* Send Button with Pop Effect */}
               <PopScaleButton
                 onPress={sendMessage}
                 disabled={loading || !input.trim()}
@@ -323,11 +382,7 @@ export default function SupportScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-
-  /* HEADER */
+  container: { flex: 1 },
   headerContainer: {
     paddingTop: vs(20),
     paddingBottom: vs(10),
@@ -335,10 +390,10 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   headerLine: {
-    height: 2,
+    height: vs(2),
     width: '30%',
     alignSelf: 'center',
-    borderRadius: 2,
+    borderRadius: ms(2),
     marginBottom: vs(10),
     opacity: 0.7,
   },
@@ -350,28 +405,24 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: ms(20),
     fontWeight: '900',
-    color: '#00ff40', // Neon Green
-    letterSpacing: 1,
+    color: '#ff00aa',
+    letterSpacing: ms(1),
     textTransform: 'uppercase',
   },
-
-  /* CHAT LIST */
-  listContainer: {
-    flex: 1,
+  statusDot: {
+    width: s(6),
+    height: s(6),
+    borderRadius: s(3),
+    marginLeft: s(8),
   },
-  emptyContainer: {
-    alignItems: 'center',
-    marginTop: vs(50),
-    opacity: 0.5,
-  },
+  listContainer: { flex: 1 },
+  emptyContainer: { alignItems: 'center', marginTop: vs(50), opacity: 0.5 },
   emptyText: {
-    color: '#00ff40', // Green text
+    color: '#ff00aa',
     fontSize: ms(14),
     fontWeight: '700',
-    letterSpacing: 2,
+    letterSpacing: ms(2),
   },
-
-  /* BUBBLES */
   messageBubble: {
     padding: s(12),
     borderRadius: ms(16),
@@ -379,39 +430,23 @@ const styles = StyleSheet.create({
     maxWidth: '80%',
   },
   userBubble: {
-    backgroundColor: '#03310b', // Dark Green
+    backgroundColor: '#330022',
     alignSelf: 'flex-end',
-    borderBottomRightRadius: 2,
+    borderBottomRightRadius: ms(2),
     borderWidth: 1,
-    borderColor: '#00ff40', // Green Border
+    borderColor: '#ff00aa',
   },
   adminBubble: {
-    backgroundColor: '#1a1a1a', // Dark Obsidian
+    backgroundColor: '#1a1a1a',
     alignSelf: 'flex-start',
-    borderBottomLeftRadius: 2,
+    borderBottomLeftRadius: ms(2),
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.1)',
   },
-  messageText: {
-    fontSize: ms(14),
-    color: '#fff',
-    lineHeight: ms(20),
-  },
-  adminText: {
-    color: '#ccc',
-  },
-
-  /* INPUT AREA */
-  inputWrapper: {
-    padding: s(15),
-    backgroundColor: 'rgba(0, 0, 0, 0)', // Slightly transparent black
-    //borderTopWidth: 1,
-    //borderTopColor: 'rgba(0, 255, 64, 0.1)',
-  },
-  inputRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
+  messageText: { fontSize: ms(14), color: '#fff', lineHeight: ms(20) },
+  adminText: { color: '#ccc' },
+  inputWrapper: { padding: s(15), backgroundColor: 'rgba(0, 0, 0, 0)' },
+  inputRow: { flexDirection: 'row', alignItems: 'center' },
   input: {
     flex: 1,
     backgroundColor: '#121212',
@@ -421,7 +456,7 @@ const styles = StyleSheet.create({
     marginRight: s(10),
     color: '#fff',
     borderWidth: 1,
-    borderColor: 'rgba(0, 255, 64, 0.2)', // Green tint border
+    borderColor: 'rgba(255, 0, 170, 0.2)',
     fontSize: ms(14),
   },
   sendButton: {
@@ -429,17 +464,17 @@ const styles = StyleSheet.create({
     height: s(45),
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: s(25),
-    shadowColor: '#00ff40',
-    shadowOffset: { width: 0, height: 2 },
+    borderRadius: ms(25),
+    shadowColor: '#ff00aa',
+    shadowOffset: { width: 0, height: vs(2) },
     shadowOpacity: 0.3,
-    shadowRadius: 5,
+    shadowRadius: ms(5),
     elevation: 5,
   },
   sendButtonText: {
-    color: '#fff', // White arrow on Green button
+    color: '#fff',
     fontSize: ms(18),
     fontWeight: 'bold',
-    marginBottom: 2,
+    marginBottom: vs(2),
   },
 });

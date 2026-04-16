@@ -71,12 +71,37 @@ export default function HomeScreen({ navigation }: any) {
     url: 'https://santrx.com/login',
   });
 
-  // 1. CALCULATE CAPPING LOGIC
-  const totalEarned = Math.floor(parseFloat(user?.total_earned || 0)); // Round down
+  // 1. CALCULATE HOLD-TO-EARN LOGIC
+  const totalEarned = Math.floor(parseFloat(user?.total_earned || 0)); // Keep this for display
+  const withdrawalAmount = parseFloat(user?.withdrawal_amount || 0);
   const totalDeposits = parseFloat(user?.deposits || 0);
-  const cappingLimit = Math.floor(totalDeposits * 3); // Round down
-  const progressPercent =
-    cappingLimit > 0 ? Math.min((totalEarned / cappingLimit) * 100, 100) : 0;
+
+  // Determine current tier and progress
+  let currentDaily = 0;
+  let targetDaily = 0;
+  let isMaxed = false;
+  let progressPercent = 0;
+
+  if (totalDeposits > 0) {
+    if (withdrawalAmount >= totalDeposits * 2) {
+      currentDaily = totalDeposits * 0.03;
+      isMaxed = true;
+      progressPercent = 100;
+    } else if (withdrawalAmount >= totalDeposits) {
+      currentDaily = totalDeposits * 0.02;
+      targetDaily = totalDeposits * 0.03;
+      // Calculate progress from 1X to 2X
+      progressPercent =
+        ((withdrawalAmount - totalDeposits) / totalDeposits) * 100;
+    } else {
+      currentDaily = totalDeposits * 0.01;
+      targetDaily = totalDeposits * 0.02;
+      progressPercent = (withdrawalAmount / totalDeposits) * 100;
+    }
+
+    // Ensure it stays between 0 and 100
+    progressPercent = Math.max(0, Math.min(progressPercent, 100));
+  }
 
   const fetchUserData = async () => {
     if (!user?.id) return;
@@ -84,7 +109,7 @@ export default function HomeScreen({ navigation }: any) {
       const { data: userData, error } = await supabase
         .from('users')
         .select(
-          'balance, profileImage, username, account_number, direct_business, total_earned, deposits',
+          'balance, profileImage, username, account_number, direct_business, total_earned, deposits, withdrawal_amount',
         )
         .eq('id', user.id)
         .single();
@@ -150,7 +175,7 @@ export default function HomeScreen({ navigation }: any) {
   return (
     <ScreenWrapper>
       <LinearGradient
-        colors={['#000000', '#0a1a10', '#082415']}
+        colors={['#000000', '#0a000e', '#170020']}
         style={{ flex: 1 }}
       >
         <ScrollView
@@ -159,8 +184,8 @@ export default function HomeScreen({ navigation }: any) {
             <RefreshControl
               refreshing={refreshing}
               onRefresh={onRefresh}
-              tintColor="#00FF88"
-              colors={['#00FF88', '#008000']}
+              tintColor="#ff00aa"
+              colors={['#ff00aa', '#9000ff']}
               progressBackgroundColor="#1c140d"
             />
           }
@@ -207,22 +232,22 @@ export default function HomeScreen({ navigation }: any) {
             {/* BALANCE SECTION */}
             <View style={styles.secondContainerWrapper}>
               <LinearGradient
-                colors={['#03310b', '#00d435']}
+                colors={['#ff00aa', '#9000ff']}
                 start={{ x: 0, y: 1 }}
                 end={{ x: 1, y: 0 }}
                 style={styles.gradientCard}
               >
                 <View style={styles.balanceOverlay}>
                   {/* 1. Round Amount (No Label) */}
-                  <Text style={styles.balanceAmount}>${totalEarned}</Text>
+                  <Text style={styles.balanceAmount}>${withdrawalAmount}</Text>
 
-                  {/* 2. Glowing Progress Bar */}
+                  {/* 2. Hold-to-Earn Progress Bar */}
                   <View style={styles.progressContainer}>
                     {/* The Track */}
                     <View style={styles.progressBarTrack}>
                       {/* The Glowing Fill */}
                       <LinearGradient
-                        colors={['#7cff7c', '#00ff40', '#008500']}
+                        colors={['rgba(0,0,0,0.5)', '#ffffff']}
                         start={{ x: 0, y: 0 }}
                         end={{ x: 1, y: 0 }}
                         style={{
@@ -233,12 +258,24 @@ export default function HomeScreen({ navigation }: any) {
                       />
                     </View>
 
-                    {/* Limit Text */}
+                    {/* Tier Text below bar (Matching old styling) */}
                     <View style={styles.limitTextRow}>
                       <Text style={styles.limitText}>
-                        {progressPercent.toFixed(0)}%
+                        Daily Now{' '}
+                        <Text style={{ color: '#ffffff', fontWeight: 'bold' }}>
+                          ${currentDaily.toFixed(2)}
+                        </Text>
                       </Text>
-                      <Text style={styles.limitText}>Cap: ${cappingLimit}</Text>
+                      {!isMaxed && (
+                        <Text style={styles.limitText}>
+                          Unlock{' '}
+                          <Text
+                            style={{ color: '#ffffff', fontWeight: 'bold' }}
+                          >
+                            ${targetDaily.toFixed(2)}
+                          </Text>
+                        </Text>
+                      )}
                     </View>
                   </View>
 
@@ -313,7 +350,7 @@ export default function HomeScreen({ navigation }: any) {
               <View style={styles.sectionHeader}>
                 <Text style={styles.transactionsTitle}>Running Nodes</Text>
                 <LinearGradient
-                  colors={['#00ff2a', '#00943200']}
+                  colors={['#ff00aa', '#ff00aa00']}
                   start={{ x: 0, y: 0.5 }}
                   end={{ x: 1, y: 0.5 }}
                   style={styles.slickLine}
@@ -321,7 +358,7 @@ export default function HomeScreen({ navigation }: any) {
               </View>
 
               {loadingRigs ? (
-                <ActivityIndicator size="small" color="#00ff40" />
+                <ActivityIndicator size="small" color="#ff00aa" />
               ) : (
                 <View style={{ width: '100%', height: vs(320) }}>
                   <ScrollView
@@ -342,14 +379,14 @@ export default function HomeScreen({ navigation }: any) {
                         <LinearGradient
                           colors={[
                             'rgba(20, 20, 20, 0.9)',
-                            'rgba(10, 30, 15, 0.95)',
+                            'rgba(10, 15, 30, 0.95)',
                           ]}
                           style={styles.miningCardInner}
                         >
                           {/* Rig Info */}
                           <View style={styles.rigInfoLeft}>
                             <View style={styles.rigIconBox}>
-                              <Text style={{ fontSize: 20 }}>🟢</Text>
+                              <Text style={{ fontSize: ms(20) }}>🔵</Text>
                             </View>
                             <View>
                               <Text style={styles.rigName}>SERVER</Text>
@@ -364,12 +401,16 @@ export default function HomeScreen({ navigation }: any) {
                             <Text style={styles.statValue}>
                               {rig.hashRate} TH/s
                             </Text>
-                            <View style={{ height: 4 }} />
+                            <View
+                              style={{
+                                height: vs(4),
+                              }}
+                            />
                             <Text
                               style={[
                                 styles.statValue,
                                 {
-                                  color: rig.temp > 80 ? '#FF4500' : '#00ff88',
+                                  color: rig.temp > 80 ? '#FF4500' : '#ff00aa',
                                 },
                               ]}
                             >
@@ -384,7 +425,7 @@ export default function HomeScreen({ navigation }: any) {
                         </LinearGradient>
                         <View style={styles.progressBarBg}>
                           <LinearGradient
-                            colors={['#00ff37', '#008000']}
+                            colors={['#ff00aa', '#9000ff']}
                             style={{
                               width: `${(rig.temp / 100) * 100}%`,
                               height: '100%',
@@ -415,7 +456,7 @@ const styles = StyleSheet.create({
     marginTop: vs(25),
   },
   userInfo: { flex: 1 },
-  name: { fontSize: ms(18), fontWeight: 'bold', color: '#00ff40' },
+  name: { fontSize: ms(18), fontWeight: 'bold', color: '#ff00aa' },
   accountNumber: { fontSize: ms(14), color: '#ffffff49', marginTop: vs(2) },
   editButton: { padding: ms(8) },
   editImage: { width: s(30), height: s(30) },
@@ -440,13 +481,13 @@ const styles = StyleSheet.create({
     marginTop: vs(10),
     borderRadius: ms(50),
     backgroundColor: '#000',
-    shadowColor: '#00b100',
+    shadowColor: '#ff00aa',
     shadowOffset: { width: 0, height: vs(4) },
     shadowOpacity: 1,
     shadowRadius: ms(10),
     elevation: 10,
-    borderColor: '#00ff40',
-    borderWidth: ms(1),
+    borderColor: '#ff82d3',
+    borderWidth: 1,
   },
   gradientCard: {
     width: '100%',
@@ -469,16 +510,16 @@ const styles = StyleSheet.create({
   balanceAmount: {
     fontSize: ms(52),
     fontWeight: 'bold',
-    color: '#d0ffc4',
+    color: '#ffe6f9',
     marginBottom: vs(5),
-    textShadowColor: 'rgba(0, 255, 42, 0.6)',
+    textShadowColor: 'rgba(255, 0, 170, 0.6)',
     textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 15,
+    textShadowRadius: ms(15),
   },
 
   // GLOWING PROGRESS BAR STYLES
   progressContainer: {
-    width: '85%',
+    width: '97%',
     marginBottom: vs(15),
     alignItems: 'center',
   },
@@ -488,7 +529,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.5)',
     borderRadius: ms(10),
     borderWidth: 1,
-    borderColor: 'rgba(0, 255, 21, 0.31)',
+    borderColor: 'rgba(255, 0, 170, 0.31)',
     overflow: 'hidden',
     marginBottom: vs(4),
   },
@@ -521,27 +562,27 @@ const styles = StyleSheet.create({
     width: s(50),
     height: s(50),
     resizeMode: 'contain',
-    backgroundColor: '#0a1a10',
+    backgroundColor: '#0a151a',
     borderRadius: ms(100),
     borderWidth: 2,
-    borderColor: 'rgba(0, 255, 64, 0.32)',
+    borderColor: 'rgba(255, 0, 170, 0.32)',
   },
-  buttonLabel: { fontSize: ms(12), color: '#a5ff93', textAlign: 'center' },
+  buttonLabel: { fontSize: ms(12), color: '#ffe6f9', textAlign: 'center' },
 
   withdrawableText: {
     marginTop: vs(10),
     marginBottom: vs(3),
     fontSize: ms(13),
-    color: '#00b436',
+    color: '#ff00aa',
     textAlign: 'center',
-    backgroundColor: 'rgba(0, 255, 136, 0.1)',
+    backgroundColor: 'rgba(255, 0, 170, 0.1)',
     paddingHorizontal: s(10),
     paddingVertical: vs(2),
     borderRadius: ms(20),
     borderWidth: 0.5,
-    borderColor: '#00ff40',
+    borderColor: '#ff00aa',
   },
-  boldAmount: { fontWeight: 'bold', fontSize: ms(16), color: '#00ff40' },
+  boldAmount: { fontWeight: 'bold', fontSize: ms(16), color: '#ff00aa' },
 
   thirdContainer: {
     width: '98%',
@@ -558,7 +599,7 @@ const styles = StyleSheet.create({
   transactionsTitle: {
     fontSize: ms(18),
     fontWeight: 'bold',
-    color: '#00ff40',
+    color: '#ff00aa',
   },
   slickLine: {
     flex: 1,
@@ -571,11 +612,11 @@ const styles = StyleSheet.create({
   /* ⚒️ Mining Card Styles */
   miningCard: {
     borderRadius: ms(25),
-    marginBottom: vs(8),
+    marginBottom: vs(10),
     width: '100%',
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: 'rgba(0, 255, 64, 0.15)',
+    borderColor: 'rgba(255, 0, 170, 0.15)',
   },
   miningCardInner: {
     flexDirection: 'row',
@@ -593,30 +634,30 @@ const styles = StyleSheet.create({
     width: s(36),
     height: s(36),
     borderRadius: ms(10),
-    backgroundColor: 'rgba(0, 255, 34, 0.1)',
+    backgroundColor: 'rgba(255, 0, 170, 0.1)',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: s(8),
     borderWidth: 1,
-    borderColor: 'rgba(0, 255, 42, 0.2)',
+    borderColor: 'rgba(255, 0, 170, 0.2)',
   },
   rigName: {
-    color: '#bbffb2',
+    color: '#ffe6f9',
     fontWeight: '700',
     fontSize: ms(12),
   },
   rigStatus: {
-    color: '#00ff40',
+    color: '#ff00aa',
     fontSize: ms(9),
     fontWeight: '600',
-    marginTop: 2,
+    marginTop: vs(2),
   },
   rigStats: {
     width: '30%',
     alignItems: 'flex-start',
     borderLeftWidth: 1,
     borderLeftColor: 'rgba(255,255,255,0.1)',
-    paddingLeft: s(10),
+    paddingLeft: s(12),
   },
   statLabel: {
     color: '#888',
@@ -634,16 +675,16 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   yieldLabel: {
-    color: '#b3ff9c',
+    color: '#ffe6f9',
     fontSize: ms(9),
     fontWeight: '800',
-    marginBottom: 2,
+    marginBottom: vs(2),
   },
   yieldValue: {
-    color: '#00ff40',
+    color: '#ff00aa',
     fontSize: ms(16),
     fontWeight: '700',
-    textShadowColor: 'rgba(0, 255, 76, 0.5)',
+    textShadowColor: 'rgba(255, 0, 170, 0.5)',
     textShadowRadius: 5,
   },
   progressBarBg: {

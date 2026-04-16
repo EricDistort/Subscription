@@ -60,9 +60,9 @@ export default function WebinarScreen({ navigation }: any) {
   return (
     <ScreenWrapper>
       <StatusBar barStyle="light-content" backgroundColor="#000" />
-      {/* 🌑 Background: Deep Green/Black Gradient matching theme */}
+      {/* 🌑 Background: Dark Cyan/Magenta Gradient matching theme */}
       <LinearGradient
-        colors={['#000000', '#0a1a10', '#082415']}
+        colors={['#000000', '#0a1a1a', '#150a1a']}
         style={{ flex: 1 }}
       >
         <SafeAreaView style={styles.container}>
@@ -74,7 +74,7 @@ export default function WebinarScreen({ navigation }: any) {
                 startInLoadingState={true}
                 renderLoading={() => (
                   <View style={styles.loaderContainer}>
-                    <ActivityIndicator size="large" color="#00ff40" />
+                    <ActivityIndicator size="large" color="#00ffff" />
                     <Text style={styles.loadingText}>
                       Connecting to Zoom...
                     </Text>
@@ -88,7 +88,7 @@ export default function WebinarScreen({ navigation }: any) {
               />
             ) : (
               <View style={styles.loaderContainer}>
-                <ActivityIndicator size="large" color="#00ff40" />
+                <ActivityIndicator size="large" color="#00ffff" />
               </View>
             )}
           </View>
@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     alignSelf: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(0, 255, 64, 0.2)', // Neon Green Border
+    borderColor: 'rgba(0, 255, 255, 0.2)', // Cyan Border
   },
   loaderContainer: {
     ...StyleSheet.absoluteFillObject,
@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   loadingText: {
-    color: '#00ff40', // Neon Green Text
+    color: '#00ffff', // Cyan Text
     marginTop: vs(15),
     fontSize: ms(14),
   },
@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
   infoTitle: {
     fontSize: ms(22),
     fontWeight: 'bold',
-    color: '#00ff40', // Neon Green Title
+    color: '#00ffff', // Cyan Title
     marginBottom: vs(10),
     letterSpacing: 0.5,
   },

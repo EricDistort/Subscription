@@ -19,10 +19,10 @@ import ScreenWrapper from '../utils/ScreenWrapper';
 
 const { width } = Dimensions.get('window');
 
-// 🎨 CHANGED: Neon Green Theme Colors (Matched to HomeScreen)
-const NEON_GREEN = '#00ff40';
-const GREEN_DARK = '#03310b';
-const GREEN_LIGHT = '#00d435';
+// 🎨 CHANGED: Cyan/Magenta Theme Colors (Matched to HomeScreen)
+const NEON_CYAN = '#ff00aa';
+const CYAN_DARK = '#1a0011';
+const MAGENTA = '#9000ff';
 
 const slides = [
   {
@@ -41,7 +41,7 @@ const slides = [
     id: '3',
     title: 'Level Income',
     desc: 'Invite friends and earn commissions up to 10 levels deep.',
-    image: require('./LoginMedia/Second.png'), 
+    image: require('./LoginMedia/Second.png'),
   },
 ];
 
@@ -104,9 +104,9 @@ export default function OnboardingScreen({ navigation }: any) {
 
   return (
     <ScreenWrapper>
-      {/* 🌑 Background: Neon Green Gradient */}
+      {/* 🌑 Background: Dark Cyan/Magenta Gradient */}
       <LinearGradient
-        colors={['#000000', '#0a1a10', '#082415']}
+        colors={['#000000', '#0a000e', '#170020']}
         style={{ flex: 1 }}
       >
         <View style={styles.container}>
@@ -151,7 +151,7 @@ export default function OnboardingScreen({ navigation }: any) {
             {/* Continue Button with Pop Effect */}
             <PopButton onPress={() => navigation.replace('Login')}>
               <LinearGradient
-                colors={[GREEN_DARK, GREEN_LIGHT]}
+                colors={[NEON_CYAN, MAGENTA]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={styles.continueBtn}
@@ -189,14 +189,14 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   title: {
-    // 🎨 CHANGED: Title Color to Neon Green
-    color: NEON_GREEN,
+    // 🎨 CHANGED: Title Color to Cyan
+    color: NEON_CYAN,
     fontSize: ms(28),
     fontWeight: 'bold',
     marginBottom: vs(12),
   },
   desc: {
-    color: '#baffba9c',
+    color: 'rgba(255, 255, 255, 0.6)',
     fontSize: ms(16),
     width: '85%',
     textAlign: 'center',
@@ -211,13 +211,13 @@ const styles = StyleSheet.create({
   dot: {
     width: ms(8),
     height: ms(8),
-    backgroundColor: '#275a27',
+    backgroundColor: '#333',
     borderRadius: ms(4),
     marginHorizontal: s(6),
   },
   activeDot: {
-    // 🎨 CHANGED: Active Dot to Neon Green
-    backgroundColor: NEON_GREEN,
+    // 🎨 CHANGED: Active Dot to Cyan
+    backgroundColor: NEON_CYAN,
     width: ms(24),
     height: ms(8),
     borderRadius: ms(4),
@@ -243,8 +243,8 @@ const styles = StyleSheet.create({
 
   buttonText: {
     textAlign: 'center',
-    // 🎨 CHANGED: Button Text to White for contrast against Green
-    color: '#d3ffc7',
+    // 🎨 CHANGED: Button Text to White
+    color: '#fff',
     fontWeight: 'bold',
     fontSize: ms(18),
   },

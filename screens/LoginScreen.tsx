@@ -94,8 +94,8 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // 🎨 NEON GREEN GRADIENT
-  const THEME_GRADIENT = ['#03310b', '#00d435'];
+  // 🎨 CYAN/MAGENTA GRADIENT
+  const THEME_GRADIENT = ['#ff00aa', '#9000ff'];
 
   const navigateToApp = (userData: any) => {
     setUser(userData);
@@ -157,9 +157,9 @@ export default function Login() {
       <StatusBar barStyle="light-content" backgroundColor="#000" />
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.mainContainer}>
-          {/* 🎨 Ambient Neon Green Background Glows */}
+          {/* 🎨 Ambient Cyan/Magenta Background Glows */}
           <LinearGradient
-            colors={['rgba(0, 255, 64, 0.3)', 'transparent']}
+            colors={['rgba(255, 0, 170, 0.3)', 'transparent']}
             style={styles.topGlow}
           />
           <View style={styles.bottomGlow} />
@@ -276,8 +276,8 @@ const styles = StyleSheet.create({
   },
   topGlow: {
     position: 'absolute',
-    top: -height * 0.15,
-    left: -width * 0.2,
+    top: vs(-height * 0.15),
+    left: s(-width * 0.2),
     width: width * 1.2,
     height: width * 1.2,
     borderRadius: width,
@@ -285,12 +285,12 @@ const styles = StyleSheet.create({
   },
   bottomGlow: {
     position: 'absolute',
-    bottom: vs(-100),
-    right: s(-50),
-    width: s(200),
-    height: s(200),
-    borderRadius: s(100),
-    backgroundColor: '#00b436', // Neon green glow
+    bottom: vs(-150),
+    right: s(-75),
+    width: s(300),
+    height: s(300),
+    borderRadius: s(150),
+    backgroundColor: '#9000ff', // Magenta glow
     opacity: 0.08,
     transform: [{ scale: 1.5 }],
   },
@@ -316,21 +316,21 @@ const styles = StyleSheet.create({
     fontSize: ms(42),
     fontWeight: '300',
     color: 'transparent',
-    textShadowColor: 'rgba(0,255,64,0.3)', // Green glow
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 1,
-    letterSpacing: 2,
-    marginBottom: -8,
+    textShadowColor: 'rgba(255, 0, 170, 0.3)', // Cyan glow
+    textShadowOffset: { width: s(1), height: vs(1) },
+    textShadowRadius: s(1),
+    letterSpacing: ms(2),
+    marginBottom: vs(-8),
   },
   titleFilled: {
     fontSize: ms(42),
     fontWeight: '900',
-    color: '#d3ffc7',
-    letterSpacing: 2,
+    color: '#ff00aa', // Cyan
+    letterSpacing: ms(2),
   },
   subtitle: {
     fontSize: ms(14),
-    color: 'rgba(205, 255, 195, 0.58)',
+    color: 'rgba(255, 255, 255, 0.58)',
     marginTop: vs(5),
     fontWeight: '400',
   },
@@ -343,20 +343,20 @@ const styles = StyleSheet.create({
   label: {
     fontSize: ms(10),
     fontWeight: '800',
-    color: '#00ff40', // Neon Green
+    color: '#ff00aa', // Cyan
     marginBottom: vs(8),
-    letterSpacing: 1,
+    letterSpacing: ms(1),
     textTransform: 'uppercase',
   },
   input: {
-    backgroundColor: 'rgba(255,255,255,0.03)',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderRadius: ms(22),
     paddingHorizontal: s(16),
     paddingVertical: vs(14),
     color: '#fff',
     fontSize: ms(16),
-    borderWidth: 1,
-    borderColor: 'rgba(0, 255, 64, 0.15)', // Green tint border
+    //borderWidth: 1,
+    borderColor: 'rgba(255, 0, 170, 0.15)', // Cyan tint border
   },
   spacer: {
     height: vs(10),
@@ -366,7 +366,7 @@ const styles = StyleSheet.create({
     borderRadius: ms(25),
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#00ff40',
+    shadowColor: '#ff00aa', // Cyan shadow
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.2,
     shadowRadius: 15,
@@ -374,10 +374,10 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   btnText: {
-    color: '#d3ffc7', // High contrast text on green button
+    color: '#fff', // White text
     fontSize: ms(16),
     fontWeight: '900',
-    letterSpacing: 2,
+    letterSpacing: ms(2),
   },
   registerLink: {
     marginTop: vs(15),
@@ -385,11 +385,11 @@ const styles = StyleSheet.create({
     padding: s(10),
   },
   registerText: {
-    color: 'rgba(217, 255, 216, 0.5)',
+    color: 'rgba(255, 255, 255, 0.5)',
     fontSize: ms(14),
   },
   registerHighlight: {
-    color: '#00ff40',
+    color: '#9000ff', // Magenta
     fontWeight: '700',
   },
 });
