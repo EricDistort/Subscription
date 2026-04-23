@@ -21,6 +21,7 @@ import {
   verticalScale as vs,
   moderateScale as ms,
 } from 'react-native-size-matters';
+import { useNavigation } from '@react-navigation/native'; // <-- Added Navigation
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -177,6 +178,7 @@ const PopButton = ({ onPress, children, style }: any) => {
 
 export default function FoundryMiningScreen() {
   const { user, setUser } = useUser();
+  const navigation = useNavigation<any>(); // <-- Init Navigation
   const [investments, setInvestments] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -284,10 +286,19 @@ export default function FoundryMiningScreen() {
           {/* 3️⃣ BOTTOM CONTAINER: ACTIVE RIGS (Scrollable) */}
           <View style={styles.bottomContainer}>
             <View style={styles.listHeader}>
-              <Text style={styles.listTitle}>RUNNING LIQUIDITY</Text>
-              <View style={styles.badge}>
-                <Text style={styles.badgeText}>{investments.length}</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={styles.listTitle}>RUNNING LIQUIDITY</Text>
+                <View style={styles.badge}>
+                  <Text style={styles.badgeText}>{investments.length}</Text>
+                </View>
               </View>
+
+              {/* 👇 NEW HISTORY BUTTON 👇 */}
+              <PopButton onPress={() => navigation.navigate('TransactionListScreen')}>
+                <View style={styles.historyBtn}>
+                  <Text style={styles.historyBtnText}>HISTORY</Text>
+                </View>
+              </PopButton>
             </View>
 
             {loading ? (
@@ -488,18 +499,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255, 0, 170, 0.3)',
   },
-  iconBox: {
-    width: s(36),
-    height: s(36),
-    borderRadius: s(18),
-    backgroundColor: 'rgba(255, 0, 170, 0.1)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: vs(8),
-    borderWidth: 1,
-    borderColor: 'rgba(255, 0, 170, 0.2)',
-  },
-  icon: { fontSize: ms(18) },
   statLabel: {
     color: '#ffcce6',
     fontSize: ms(11),
@@ -536,12 +535,13 @@ const styles = StyleSheet.create({
     fontSize: ms(14),
     fontWeight: '800',
     letterSpacing: ms(1),
+    marginRight: s(10), // Added to push badge away slightly
   },
   badge: {
     backgroundColor: 'rgba(255, 0, 170, 0.1)',
-    paddingHorizontal: s(10),
-    paddingVertical: vs(3),
-    borderRadius: ms(10),
+    paddingHorizontal: s(8),
+    paddingVertical: vs(2),
+    borderRadius: ms(8),
     borderWidth: 1,
     borderColor: 'rgba(255, 0, 170, 0.3)',
   },
@@ -549,6 +549,22 @@ const styles = StyleSheet.create({
     color: '#ff00aa',
     fontSize: ms(10),
     fontWeight: '700',
+  },
+
+  /* NEW: History Button Styles */
+  historyBtn: {
+    backgroundColor: 'rgba(255, 0, 242, 0.81)', // Purple tint
+    paddingHorizontal: s(12),
+    paddingVertical: vs(6),
+    borderRadius: ms(15),
+    borderWidth: 1,
+    borderColor: '#ff91ed8a', // Purple border
+  },
+  historyBtnText: {
+    color: '#000000',
+    fontSize: ms(12),
+    fontWeight: 'bold',
+    letterSpacing: ms(0.5),
   },
 
   /* Rig Card */
@@ -660,16 +676,18 @@ const styles = StyleSheet.create({
     letterSpacing: ms(0.5),
   },
   actionBtn: {
-    backgroundColor: '#800080',
+    backgroundColor: '#d400ff33',
     paddingVertical: vs(8),
     paddingHorizontal: s(18),
     borderRadius: ms(20),
     shadowColor: '#ff00aa',
     shadowOpacity: 0.3,
     shadowRadius: ms(5),
+    borderWidth: 1,
+    borderColor: '#ff00aa',
   },
   actionBtnText: {
-    color: '#fff', // Changed for contrast with Cyan Button
+    color: '#fff',
     fontSize: ms(10),
     fontWeight: '800',
   },

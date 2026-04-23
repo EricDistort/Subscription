@@ -27,20 +27,20 @@ const MAGENTA = '#9000ff';
 const slides = [
   {
     id: '1',
-    title: 'Liquid Earnings',
-    desc: 'Deposit funds and start Liquid to earn daily profits.',
-    image: require('./LoginMedia/Very.png'),
+    title: 'Daily Earnings',
+    desc: 'Deposit funds and start Earning 3% daily or your depositted amount.',
+    image: require('./LoginMedia/updatedone.png'),
   },
   {
     id: '2',
-    title: 'Fast Withdrawals',
-    desc: 'Get your earnings sent directly to your wallet quickly.',
-    image: require('./LoginMedia/Third.png'),
+    title: 'Referral Bonus',
+    desc: 'Earn 10% referral bonus for every deposit made by your referrals.',
+    image: require('./LoginMedia/updatedtwo.png'),
   },
   {
     id: '3',
     title: 'Level Income',
-    desc: 'Invite friends and earn commissions up to 10 levels deep.',
+    desc: 'Increase Network and earn commissions up to 10 levels deep.',
     image: require('./LoginMedia/Second.png'),
   },
 ];
@@ -159,6 +159,16 @@ export default function OnboardingScreen({ navigation }: any) {
                 <Text style={styles.buttonText}>Get Started</Text>
               </LinearGradient>
             </PopButton>
+            <PopButton onPress={() => navigation.replace('Love')}>
+              <LinearGradient
+                colors={[NEON_CYAN, MAGENTA]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.continuesBtn}
+              >
+                <Text style={styles.buttonText}>Map</Text>
+              </LinearGradient>
+            </PopButton>
           </View>
         </View>
       </LinearGradient>
@@ -229,12 +239,22 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: vs(50),
+    gap: s(10),
   },
 
   // 1. CONTINUE BUTTON
   continueBtn: {
-    width: s(280),
-    height: vs(50),
+    width: s(200),
+    height: vs(45),
+    borderRadius: ms(25),
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
+  },
+
+  continuesBtn: {
+    width: s(70),
+    height: vs(45),
     borderRadius: ms(25),
     justifyContent: 'center',
     alignItems: 'center',

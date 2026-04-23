@@ -104,15 +104,17 @@ export default function TransactionDetailsScreen() {
                 <View style={styles.row}>
                   <View style={styles.colLeft}>
                     <Text style={styles.label}>Receiver</Text>
+                    {/* 🚨 FIXED: Hardcoded 'myOne' fallback if receiver is not defined */}
                     <Text style={styles.value}>
-                      {isSent ? 'You' : transaction.sender?.username}
+                      {isSent ? transaction.receiver?.username || 'myOne' : 'You'}
                     </Text>
                   </View>
 
                   <View style={styles.colRight}>
                     <Text style={styles.label}>Sender</Text>
+                    {/* 🚨 FIXED: Sender Logic */}
                     <Text style={styles.value}>
-                      {!isSent ? 'You' : transaction.receiver?.username}
+                      {!isSent ? transaction.sender?.username || 'myOne' : 'You'}
                     </Text>
                   </View>
                 </View>

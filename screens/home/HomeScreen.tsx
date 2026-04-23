@@ -323,7 +323,7 @@ export default function HomeScreen({ navigation }: any) {
                 onPress={() => navigation.navigate('RecieveMoneyScreen')}
               >
                 <Text style={styles.withdrawableText}>
-                  Direct Business{' '}
+                  Total Network{' '}
                   <Text style={styles.boldAmount}>
                     ${user?.direct_business || 0}
                   </Text>
@@ -332,7 +332,7 @@ export default function HomeScreen({ navigation }: any) {
 
               <PopScaleButton
                 onPress={() =>
-                  navigation.navigate('TransactionListScreen', {
+                  navigation.navigate('Plan', {
                     url: partnerData.url,
                     title: partnerData.name,
                   })
@@ -340,7 +340,7 @@ export default function HomeScreen({ navigation }: any) {
               >
                 <Text style={styles.withdrawableText}>
                   {' '}
-                  <Text style={styles.boldAmount}>Logs</Text>
+                  <Text style={styles.boldAmount}>Map</Text>
                 </Text>
               </PopScaleButton>
             </View>
@@ -573,16 +573,15 @@ const styles = StyleSheet.create({
     marginTop: vs(10),
     marginBottom: vs(3),
     fontSize: ms(13),
-    color: '#ff00aa',
+    color: '#000000',
     textAlign: 'center',
-    backgroundColor: 'rgba(255, 0, 170, 0.1)',
+    backgroundColor: 'rgba(255, 0, 212, 0.89)',
     paddingHorizontal: s(10),
     paddingVertical: vs(2),
     borderRadius: ms(20),
-    borderWidth: 0.5,
-    borderColor: '#ff00aa',
+    
   },
-  boldAmount: { fontWeight: 'bold', fontSize: ms(16), color: '#ff00aa' },
+  boldAmount: { fontWeight: 'bold', fontSize: ms(16), color: '#000000' },
 
   thirdContainer: {
     width: '98%',

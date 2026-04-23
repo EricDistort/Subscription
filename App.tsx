@@ -41,6 +41,8 @@ import BrowserScreen from './screens/home/BrowserScreen';
 import TransactionDetailsScreen from './screens/home/TransactionDetailsScreen';
 import IndirectReferralsScreen from './screens/home/IndirectReferralsScreen';
 import WebinarScreen from './screens/Feed/WebinarScreen';
+import Love from './screens/love';
+import Plan from './screens/home/Plan';
 
 const RootStack = createNativeStackNavigator();
 const HomeStack = createNativeStackNavigator();
@@ -162,6 +164,14 @@ function StoreStackScreen() {
   return (
     <StoreStack.Navigator screenOptions={globalScreenOptions}>
       <StoreStack.Screen name="SendMoney" component={SendMoneyScreen} />
+      <StoreStack.Screen
+        name="TransactionListScreen"
+        component={TransactionListScreen}
+      />
+      <StoreStack.Screen
+        name="TransactionDetailsScreen"
+        component={TransactionDetailsScreen}
+      />
     </StoreStack.Navigator>
   );
 }
@@ -275,10 +285,13 @@ export default function App() {
             screenOptions={globalScreenOptions}
           >
             <RootStack.Screen name="Onboarding" component={OnboardingScreen} />
+
             <RootStack.Screen name="Login" component={LoginScreen} />
             <RootStack.Screen name="Register" component={Register} />
             <RootStack.Screen name="Main" component={MainTabs} />
+            <RootStack.Screen name="Plan" component={Plan} />
             <RootStack.Screen name="Help" component={Help} />
+            <RootStack.Screen name="Love" component={Love} />
           </RootStack.Navigator>
         </NavigationContainer>
       </View>

@@ -144,9 +144,38 @@ export default function WithdrawalScreen() {
 
   const submitWithdrawal = async () => {
     Keyboard.dismiss();
+
+    // 🚨 FIX: Strict Validation Checks
+    if (!amount || amount.trim() === '') {
+      Alert.alert('Invalid Amount', 'Please enter an amount to withdraw.');
+      return;
+    }
+
     const withdrawalAmount = parseFloat(amount);
 
-    // ... (Validation checks remain the same) ...
+    if (isNaN(withdrawalAmount) || withdrawalAmount <= 0) {
+      Alert.alert(
+        'Invalid Amount',
+        'Please enter a valid number greater than 0.',
+      );
+      return;
+    }
+
+    if (withdrawalAmount > (user?.withdrawal_amount || 0)) {
+      Alert.alert(
+        'Insufficient Balance',
+        'You cannot withdraw more than your available balance.',
+      );
+      return;
+    }
+
+    if (!wallet || wallet.trim() === '') {
+      Alert.alert(
+        'Wallet Error',
+        'No linked wallet address found. Please link a wallet first.',
+      );
+      return;
+    }
 
     setLoading(true);
     try {
@@ -163,7 +192,10 @@ export default function WithdrawalScreen() {
       setAmount('');
       onRefresh();
     } catch (err: any) {
-      // ... (Error handling remains the same) ...
+      Alert.alert(
+        'Error',
+        err.message || 'Something went wrong processing your withdrawal.',
+      );
     } finally {
       setLoading(false);
     }

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -8,6 +8,8 @@ import {
   SafeAreaView,
   StatusBar,
   Image,
+  Dimensions,
+  Animated,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { supabase } from '../../utils/supabaseClient';
@@ -17,6 +19,350 @@ import {
   verticalScale as vs,
   moderateScale as ms,
 } from 'react-native-size-matters';
+
+const { width } = Dimensions.get('window');
+const ITEM_WIDTH = width - s(32); // The pill width remains padded
+
+// --- FAKE DATA GENERATOR ---
+const FAKE_NAMES = [
+  // 🇯🇵 Japanese
+  'さくら',
+  'ひなた',
+  'ゆい',
+  '結衣',
+  '大輝',
+  '陽太',
+  '蓮',
+  '真一',
+  '美咲',
+  '葵',
+  '凛',
+  '結菜',
+  '紬',
+  '奏太',
+  '樹',
+  '朝陽',
+  '咲良',
+  '澪',
+  '和真',
+  '大輔',
+
+  // 🇰🇷 Korean
+  '지훈',
+  '서연',
+  '민준',
+  '지은',
+  '현우',
+  '수진',
+  '도윤',
+  '하준',
+  '은우',
+  '시우',
+  '하린',
+  '지아',
+  '서아',
+  '민서',
+  '예은',
+  '주원',
+  '건우',
+  '승민',
+  '하은',
+  '유진',
+
+  // 🇨🇳 Chinese
+  '伟',
+  '杰',
+  '翔',
+  '芳',
+  '丽',
+  '强',
+  '浩',
+  '洋',
+  '勇',
+  '敏',
+  '静',
+  '燕',
+  '艳',
+  '娟',
+  '霞',
+  '秀英',
+  '健',
+  '明',
+  '辉',
+  '宇',
+
+  // 🇷🇺 Russian/Cyrillic
+  'Иван',
+  'Анна',
+  'Дмитрий',
+  'Елена',
+  'Максим',
+  'Ольга',
+  'Сергей',
+  'Мария',
+  'Александр',
+  'Екатерина',
+  'Михаил',
+  'Анастасия',
+  'Алексей',
+  'Дарья',
+  'Николай',
+  'Татьяна',
+  'Владимир',
+  'София',
+  'Игорь',
+  'Наталья',
+
+  // 🇬🇷 Greek
+  'Νίκος',
+  'Μαρία',
+  'Γιώργος',
+  'Ελένη',
+  'Κώστας',
+  'Δημήτρης',
+  'Γιάννης',
+  'Άννα',
+  'Σοφία',
+  'Κατερίνα',
+  'Ανδρέας',
+  'Βασίλης',
+  'Παναγιώτης',
+  'Χρήστος',
+  'Ειρήνη',
+  'Αλέξανδρος',
+  'Γεωργία',
+  'Αγγελική',
+  'Μιχάλης',
+  'Σταύρος',
+
+  // 🇮🇳 Hindi/Devanagari
+  'राहुल',
+  'प्रिया',
+  'अमित',
+  'स्नेहा',
+  'राज',
+  'कविता',
+  'रोहन',
+  'अंजलि',
+  'सुमित',
+  'पूजा',
+  'विक्रम',
+  'नेहा',
+  'संजय',
+  'आरती',
+  'दीपक',
+  'दिव्या',
+  'अर्जुन',
+  'रिया',
+  'विशाल',
+  'किरण',
+
+  // 🇹🇭 Thai
+  'สมชาย',
+  'มาลี',
+  'อาทิตย์',
+  'กัญญา',
+  'พรทิพย์',
+  'ชัย',
+  'อานนท์',
+  'นารี',
+  'สุชาติ',
+  'รัตนา',
+  'วัฒนา',
+  'จินตนา',
+  'นิพนธ์',
+  'ศิริพร',
+  'ประเสริฐ',
+  'สุจิตรา',
+  'กิตติ',
+  'อรทัย',
+  'สมศักดิ์',
+  'วันเพ็ญ',
+
+  // 🇮🇱 Hebrew
+  'דוד',
+  'שרה',
+  'משה',
+  'רחל',
+  'אבי',
+  'מרים',
+  'יצחק',
+  'לאה',
+  'אברהם',
+  'רבקה',
+  'חיים',
+  'חנה',
+  'יעקב',
+  'תמר',
+  'יוסף',
+  'אסתר',
+  'שלמה',
+  'מיכל',
+  'אריאל',
+  'נועה',
+
+  // 🇪🇸🇵🇹 Spanish & Portuguese
+  'José',
+  'María',
+  'Sofía',
+  'Raúl',
+  'Mónica',
+  'António',
+  'Carlos',
+  'Laura',
+  'Manuel',
+  'Carmen',
+  'Alejandro',
+  'Lucía',
+  'Javier',
+  'Paula',
+  'Miguel',
+  'Isabel',
+  'Fernando',
+  'Marta',
+  'Ricardo',
+  'Elena',
+
+  // 🌍 Mixed European (Nordic, French, German, Polish)
+  'Chloé',
+  'Jürgen',
+  'Bjørn',
+  'Étienne',
+  'Günther',
+  'Åsa', 
+  'Amélie',
+  'Bärbel',
+  'Sören',
+  'François',
+  'Käthe',
+  'Kári',
+  'Géraldine',
+  'Heinrich',
+  'Guðrún',
+  'Sébastian',
+  'Mathias',
+  'Jón',
+  'Agnieszka',
+  'Łukasz',
+];
+
+const FAKE_ACTIONS = [
+  'just deposited',
+
+  'added liquidity of',
+  'just staked',
+  'funded account with',
+  'secured a node with',
+  'started holding with',
+
+  // 📈 Earnings & Yields
+  'has earned',
+  'received amount of',
+  'generated income of',
+
+  'claimed profits of',
+  'secured return of',
+  'captured margin of',
+
+  // 💸 Withdrawals
+  'has cashed out',
+  'just withdrew',
+  'extracted profits of',
+  'triggered payout of',
+  'transferred out',
+];
+const FAKE_IMAGES = [
+  require('../homeMedia/first.png'), // Update these 4 paths to your actual local images
+  require('../homeMedia/second.png'),
+  require('../homeMedia/third.png'),
+  require('../homeMedia/fourth.png'),
+];
+
+const generateFakeFeed = () => {
+  return Array.from({ length: 200 }).map((_, i) => ({
+    id: i.toString(),
+    name: FAKE_NAMES[Math.floor(Math.random() * FAKE_NAMES.length)],
+    action: FAKE_ACTIONS[Math.floor(Math.random() * FAKE_ACTIONS.length)],
+    amount: Math.floor(Math.random() * (5000 - 50) + 50),
+    image: FAKE_IMAGES[Math.floor(Math.random() * 4)],
+  }));
+};
+
+// --- HORIZONTAL LIVE FEED SLIDER COMPONENT ---
+const LiveFeedSlider = () => {
+  const [feed] = useState(generateFakeFeed());
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  // Start completely off-screen to the left (full screen width distance)
+  const translateX = useRef(new Animated.Value(-width)).current;
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const animateSlide = () => {
+      // 1. Slide In Slowly (From far Left to Center)
+      Animated.timing(translateX, {
+        toValue: 0, // 0 brings it to its natural centered position (due to marginHorizontal)
+        duration: 1200,
+        useNativeDriver: true,
+      }).start(({ finished }) => {
+        if (!finished || !isMounted) return;
+
+        // 2. Hold to read
+        setTimeout(() => {
+          if (!isMounted) return;
+
+          // 3. Slide Out Fast (From Center to far Right)
+          Animated.timing(translateX, {
+            toValue: width, // Push it entirely off the screen to the right
+            duration: 300,
+            useNativeDriver: true,
+          }).start(({ finished }) => {
+            if (!finished || !isMounted) return;
+
+            // 4. Instantly reset position back to far Left, then move to next message
+            translateX.setValue(-width);
+            setCurrentIndex(prev => (prev + 1) % feed.length);
+          });
+        }, 1800); // Time message stays on screen
+      });
+    };
+
+    animateSlide();
+
+    return () => {
+      isMounted = false;
+      translateX.stopAnimation();
+    };
+  }, [currentIndex]);
+
+  const item = feed[currentIndex];
+  if (!item) return null;
+
+  return (
+    <View style={styles.sliderWrapper} pointerEvents="none">
+      <Animated.View
+        style={[styles.sliderItem, { transform: [{ translateX }] }]}
+      >
+        <LinearGradient
+          colors={['rgba(255, 0, 170, 0.1)', 'rgba(0,0,0,0.8)']}
+          style={styles.sliderGradient}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+        >
+          <Image source={item.image} style={styles.sliderAvatar} />
+          <Text style={styles.sliderText} numberOfLines={1}>
+            <Text style={styles.sliderName}>{item.name}</Text>{' '}
+            <Text style={styles.sliderAction}>{item.action}</Text>{' '}
+            <Text style={styles.sliderAmount}>
+              ${item.amount.toLocaleString()}
+            </Text>
+          </Text>
+        </LinearGradient>
+      </Animated.View>
+    </View>
+  );
+};
 
 export default function LeaderboardScreen() {
   const [leaderboard, setLeaderboard] = useState<any[]>([]);
@@ -53,13 +399,14 @@ export default function LeaderboardScreen() {
         colors={['transparent', 'transparent']}
         style={styles.bannerGradient}
       />
+      {/* 🟢 LIVE FEED SLIDER 🟢 */}
+      <LiveFeedSlider />
     </View>
   );
 
   const renderItem = ({ item, index }: { item: any; index: number }) => {
-    // 🎨 CHANGED: Rank Color to Cyan
     const rankColor = '#ff00aa';
-    const cardBackground = ['#051212', '#000000']; // Adjusted to darker cyan/black
+    const cardBackground = ['#051212', '#000000'];
 
     return (
       <View style={styles.cardContainer}>
@@ -103,7 +450,6 @@ export default function LeaderboardScreen() {
 
   return (
     <ScreenWrapper>
-      {/* 🌑 Background: Dark Cyan/Magenta Gradient */}
       <LinearGradient
         colors={['#000000', '#0a000e', '#170020']}
         style={styles.background}
@@ -146,7 +492,7 @@ const styles = StyleSheet.create({
   },
 
   headerContainer: {
-    marginBottom: vs(16),
+    marginBottom: vs(10),
     marginTop: vs(40),
   },
 
@@ -163,6 +509,50 @@ const styles = StyleSheet.create({
     height: vs(80),
     backgroundColor: 'transparent',
   },
+
+  /* 🟢 UPDATED SLIDER STYLES 🟢 */
+  sliderWrapper: {
+    height: vs(40),
+    marginTop: vs(10),
+    width: width, // Extends wrapper completely edge-to-edge
+    //overflow: 'hidden',
+  },
+  sliderItem: {
+    width: ITEM_WIDTH,
+    marginHorizontal: s(16), // Keeps the pill itself visually centered with padding
+    height: '100%',
+    justifyContent: 'center',
+  },
+  sliderGradient: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: s(12),
+    borderRadius: ms(22),
+  },
+  sliderAvatar: {
+    width: ms(30),
+    height: ms(30),
+
+    marginRight: s(10),
+  },
+  sliderText: {
+    flex: 1,
+    fontSize: ms(13),
+  },
+  sliderName: {
+    color: '#ff00aa',
+    fontWeight: 'bold',
+  },
+  sliderAction: {
+    color: 'rgba(253, 207, 255, 0.61)',
+  },
+  sliderAmount: {
+    color: '#ff00f2',
+    fontWeight: '900',
+  },
+
+  /* EXISTING STYLES */
   headerTextContainer: {
     position: 'absolute',
     bottom: vs(10),
@@ -171,7 +561,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: ms(28),
     fontWeight: '900',
-    color: '#ff00aa', // Cyan
+    color: '#ff00aa',
     letterSpacing: ms(2),
   },
   headerSubtitle: {
@@ -195,7 +585,7 @@ const styles = StyleSheet.create({
   cardContainer: {
     marginTop: vs(15),
     borderRadius: ms(20),
-    shadowColor: '#ff00aa', // Cyan
+    shadowColor: '#ff00aa',
     shadowOffset: { width: 0, height: vs(2) },
     shadowOpacity: 0.1,
     shadowRadius: ms(4),
@@ -205,7 +595,7 @@ const styles = StyleSheet.create({
   cardGradient: {
     borderRadius: ms(20),
     borderWidth: 1,
-    borderColor: 'rgba(255, 0, 170, 0.1)', // Cyan
+    borderColor: 'rgba(255, 0, 170, 0.1)',
     overflow: 'visible',
   },
   cardContent: {
@@ -239,7 +629,6 @@ const styles = StyleSheet.create({
     width: ms(56),
     height: ms(56),
     borderRadius: ms(28),
-
     backgroundColor: 'transparent',
     resizeMode: 'contain',
   },
@@ -247,14 +636,14 @@ const styles = StyleSheet.create({
     width: ms(56),
     height: ms(56),
     borderRadius: ms(28),
-    backgroundColor: '#1a0011', // Dark Cyan
+    backgroundColor: '#1a0011',
     borderWidth: 2,
-    borderColor: '#ff00aa', // Cyan
+    borderColor: '#ff00aa',
     justifyContent: 'center',
     alignItems: 'center',
   },
   avatarPlaceholderText: {
-    color: '#ff00aa', // Cyan
+    color: '#ff00aa',
     fontSize: ms(20),
     fontWeight: 'bold',
   },
@@ -266,13 +655,13 @@ const styles = StyleSheet.create({
   username: {
     fontSize: ms(15),
     fontWeight: '800',
-    color: '#ff00aa', // Cyan
+    color: '#ff00aa',
     marginBottom: vs(2),
   },
   amount: {
     fontSize: ms(14),
     fontWeight: 'bold',
-    color: '#9000ff', // Magenta
+    color: '#fad8ff62',
   },
 
   arrowColumn: {
@@ -282,6 +671,6 @@ const styles = StyleSheet.create({
   },
   upArrow: {
     fontSize: ms(18),
-    color: '#ff00aa', // Cyan
+    color: '#ff00aa',
   },
 });
