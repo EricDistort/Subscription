@@ -36,7 +36,6 @@ import { useUser } from '../utils/UserContext';
 import ScreenWrapper from '../utils/ScreenWrapper';
 
 const { width, height } = Dimensions.get('window');
-
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
 /*
@@ -48,10 +47,10 @@ const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
  * Change SWIPE_CORNER_RADIUS only when you want to adjust
  * the button's overall corner radius.
  */
-const SWIPE_HEIGHT = vs(48);
+const SWIPE_HEIGHT = vs(58);
 const SWIPE_BORDER_WIDTH = s(2);
-const SWIPE_THUMB_SIZE = vs(38);
-const SWIPE_CORNER_RADIUS = ms(22);
+const SWIPE_THUMB_SIZE = vs(46);
+const SWIPE_CORNER_RADIUS = vs(26);
 
 const SWIPE_INNER_RADIUS = Math.max(
   0,
@@ -291,7 +290,7 @@ const SwipeButton = ({ onSwipeSuccess, loading, colors }: SwipeButtonProps) => {
       >
         <View style={styles.swipeInnerTrack}>
           <Text pointerEvents="none" style={styles.swipeText}>
-            CREATE VAULT
+            CREATE ACCOUNT
           </Text>
 
           <AnimatedLinearGradient
@@ -341,11 +340,7 @@ export default function Register() {
   const THEME_GRADIENT = ['#ff00aa', '#9000ff'];
 
   const handleRegister = async (): Promise<boolean> => {
-    if (
-      !username.trim() ||
-      !password.trim() ||
-      !mobile.trim()
-    ) {
+    if (!username.trim() || !password.trim() || !mobile.trim()) {
       Alert.alert('Missing Details', 'All fields are required.');
       return false;
     }
@@ -421,7 +416,7 @@ export default function Register() {
           {loading && (
             <View style={styles.loadingOverlay}>
               <LottieView
-                source={require('./LoginMedia/loadinglatest.json')}
+                source={require('./LoginMedia/Loadinglatest.json')}
                 autoPlay
                 loop
                 style={styles.loadingAnimation}
@@ -621,7 +616,6 @@ const styles = StyleSheet.create({
     paddingVertical: vs(12),
     color: '#000',
     fontSize: ms(16),
-   
   },
 
   spacer: {
@@ -672,7 +666,7 @@ const styles = StyleSheet.create({
     width: '100%',
     zIndex: 1,
     textAlign: 'center',
-    color: '#9000ff',
+    color: '#af00be',
     fontSize: ms(14),
     fontWeight: '900',
     letterSpacing: ms(2),

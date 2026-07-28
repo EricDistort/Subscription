@@ -18,7 +18,7 @@ import {
   moderateScale as ms,
 } from 'react-native-size-matters';
 
-import ScreenWrapper from '../utils/ScreenWrapper';
+import ScreenWrapper from '../../utils/ScreenWrapper';
 
 /* -------------------------------------------------------------------------- */
 /*                                   THEME                                    */
@@ -58,7 +58,7 @@ const steps: GrowthStep[] = [
     recognition: 'Explorer',
 
     // Replace with the required local image.
-    image: require('./LoginMedia/One.jpeg'),
+    image: require('../LoginMedia/One.jpeg'),
   },
   {
     id: '2',
@@ -71,7 +71,7 @@ const steps: GrowthStep[] = [
     recognition: 'Builder',
 
     // Replace with the required local image.
-    image: require('./LoginMedia/Two.jpg'),
+    image: require('../LoginMedia/Two.jpg'),
   },
   {
     id: '3',
@@ -84,7 +84,7 @@ const steps: GrowthStep[] = [
     recognition: 'Core Builder',
 
     // Replace with the required local image.
-    image: require('./LoginMedia/Three.jpg'),
+    image: require('../LoginMedia/Three.jpg'),
   },
   {
     id: '4',
@@ -97,7 +97,7 @@ const steps: GrowthStep[] = [
     recognition: 'Team Leader',
 
     // Replace with the required local image.
-    image: require('./LoginMedia/Four.jpg'),
+    image: require('../LoginMedia/Four.jpg'),
   },
   {
     id: '5',
@@ -110,7 +110,7 @@ const steps: GrowthStep[] = [
     recognition: 'Mentor',
 
     // Replace with the required local image.
-    image: require('./LoginMedia/Five.jpeg'),
+    image: require('../LoginMedia/Five.jpeg'),
   },
   {
     id: '6',
@@ -123,7 +123,7 @@ const steps: GrowthStep[] = [
     recognition: 'Community Leader',
 
     // Replace with the required local image.
-    image: require('./LoginMedia/Six.jpeg'),
+    image: require('../LoginMedia/Six.jpeg'),
   },
   {
     id: '7',
@@ -136,7 +136,7 @@ const steps: GrowthStep[] = [
     recognition: 'Regional Leader',
 
     // Replace with the required local image.
-    image: require('./LoginMedia/Seven.jpg'),
+    image: require('../LoginMedia/Seven.jpg'),
   },
   {
     id: '8',
@@ -149,7 +149,7 @@ const steps: GrowthStep[] = [
     recognition: 'National Leader',
 
     // Replace with the required local image.
-    image: require('./LoginMedia/Eight.jpg'),
+    image: require('../LoginMedia/Eight.jpg'),
   },
   {
     id: '9',
@@ -162,7 +162,7 @@ const steps: GrowthStep[] = [
     recognition: 'Global Leader',
 
     // Replace with the required local image.
-    image: require('./LoginMedia/Nine.jpeg'),
+    image: require('../LoginMedia/Nine.jpeg'),
   },
   {
     id: '10',
@@ -175,7 +175,7 @@ const steps: GrowthStep[] = [
     recognition: 'Legacy Leader',
 
     // Replace with the required local image.
-    image: require('./LoginMedia/Ten.jpg'),
+    image: require('../LoginMedia/Ten.jpg'),
   },
 ];
 
@@ -444,39 +444,6 @@ export default function OnboardingScreen({ navigation }: any) {
             </ScrollView>
           </Animated.View>
         </View>
-
-        <View style={styles.buttonContainer}>
-          <PopButton
-            onPress={handleStartJourney}
-            style={styles.startButtonWrapper}
-          >
-            <LinearGradient
-              colors={[NEON_CYAN, MAGENTA]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.startButton}
-            >
-              <Text style={styles.startButtonText}>Start Journey</Text>
-            </LinearGradient>
-          </PopButton>
-
-          <PopButton
-            onPress={handleNext}
-            disabled={isLastStep}
-            style={styles.nextButtonWrapper}
-          >
-            <LinearGradient
-              colors={
-                isLastStep ? ['#d6d2d8', '#bab5bc'] : [NEON_CYAN, MAGENTA]
-              }
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.nextButton}
-            >
-              <Text style={styles.nextButtonText}>›</Text>
-            </LinearGradient>
-          </PopButton>
-        </View>
       </LinearGradient>
     </ScreenWrapper>
   );
@@ -661,12 +628,10 @@ const styles = StyleSheet.create({
     paddingTop: vs(12),
     paddingBottom: vs(40),
     backgroundColor: 'rgba(255, 255, 255, 0.96)',
-    
   },
 
   startButtonWrapper: {
     flex: 1,
-    
   },
 
   nextButtonWrapper: {
@@ -684,12 +649,11 @@ const styles = StyleSheet.create({
     borderRadius: ms(25),
     alignItems: 'center',
     justifyContent: 'center',
-  shadowColor: '#000000',
+    shadowColor: '#000000',
     shadowOffset: { width: 0, height: vs(4) },
     shadowOpacity: 0.2,
     shadowRadius: ms(10),
     elevation: 10,
-
   },
 
   nextButton: {
@@ -703,7 +667,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: ms(10),
     elevation: 10,
-
   },
 
   startButtonText: {

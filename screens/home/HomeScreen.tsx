@@ -359,29 +359,14 @@ export default function HomeScreen({ navigation }: any) {
 
             {/* Direct Business & Partner Section */}
             <View style={{ flexDirection: 'row', gap: s(8) }}>
-              <PopScaleButton
-                onPress={() =>
-                  navigation.navigate('Plan', {
-                    url: partnerData.url,
-                    title: partnerData.name,
-                  })
-                }
-              >
+              <PopScaleButton onPress={() => navigation.navigate('Plan')}>
                 <Text style={styles.withdrawabledText}>
-                  {' '}
                   <Text style={styles.boldedAmount}>3 Step Roadmap</Text>
                 </Text>
               </PopScaleButton>
-              <PopScaleButton
-                onPress={() =>
-                  navigation.navigate('Plan', {
-                    url: partnerData.url,
-                    title: partnerData.name,
-                  })
-                }
-              >
+
+              <PopScaleButton onPress={() => navigation.navigate('Map')}>
                 <Text style={styles.withdrawabledText}>
-                  {' '}
                   <Text style={styles.boldedAmount}>Show</Text>
                 </Text>
               </PopScaleButton>

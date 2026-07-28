@@ -582,7 +582,7 @@ export default function Login() {
           {loading && (
             <View style={styles.loadingOverlay}>
               <LottieView
-                source={require('./LoginMedia/loadinglatest.json')}
+                source={require('./LoginMedia/Loadinglatest.json')}
                 autoPlay
                 loop
                 style={styles.loadingAnimation}
@@ -855,7 +855,7 @@ const styles = StyleSheet.create({
     height: SWIPE_HEIGHT,
     borderRadius: SWIPE_CORNER_RADIUS,
     backgroundColor: 'transparent',
-    shadowColor: '#ff00aa',
+    shadowColor: '#000000',
     shadowOffset: {
       width: 0,
       height: 8,
@@ -889,7 +889,7 @@ const styles = StyleSheet.create({
     width: '100%',
     zIndex: 1,
     textAlign: 'center',
-    color: '#9000ff',
+    color: '#af00be',
     fontSize: ms(14),
     fontWeight: '900',
     letterSpacing: ms(2),

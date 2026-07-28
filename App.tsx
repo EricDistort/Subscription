@@ -46,6 +46,7 @@ import Love from './screens/love';
 import Plan from './screens/home/Plan';
 import FeedDetailScreen from './screens/Feed/FeedDetailScreen';
 import SubscriptionScreen from './screens/home/SubscriptionScreen';
+import Map from './screens/home/Map';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const COLLAPSED_SIZE = vs(65);
@@ -258,6 +259,7 @@ function HomeStackScreen() {
       <HomeStack.Screen name="FeedDetailScreen" component={FeedDetailScreen} />
       <HomeStack.Screen name="WebinarScreen" component={WebinarScreen} />
       <HomeStack.Screen name="OrderList" component={OrderListScreen} />
+      <HomeStack.Screen name="Map" component={Map} />
       <HomeStack.Screen
         name="SubscriptionScreen"
         component={SubscriptionScreen}

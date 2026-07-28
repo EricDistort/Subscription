@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Animated,
   Dimensions,
@@ -7,11 +7,9 @@ import {
   Pressable,
   SafeAreaView,
   StatusBar,
-  StyleProp,
   StyleSheet,
   Text,
   View,
-  ViewStyle,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {
@@ -23,6 +21,9 @@ import {
 import ScreenWrapper from '../../utils/ScreenWrapper';
 
 const { width } = Dimensions.get('window');
+
+const AnimatedLinearGradient =
+  Animated.createAnimatedComponent(LinearGradient);
 
 /* -------------------------------------------------------------------------- */
 /*                                   THEME                                    */
@@ -46,6 +47,38 @@ const SIDE_TRANSLATE_X = Math.max(
   width / 2 -
     (CARD_WIDTH * SIDE_CARD_SCALE) / 2 -
     SIDE_EDGE_GAP,
+);
+
+/* -------------------------------------------------------------------------- */
+/*                         SWIPE BUTTON GEOMETRY                              */
+/* -------------------------------------------------------------------------- */
+
+const SWIPE_HEIGHT = vs(58);
+const SWIPE_BORDER_WIDTH = s(2);
+const SWIPE_THUMB_SIZE = vs(46);
+const SWIPE_CORNER_RADIUS = vs(26);
+
+const SWIPE_INNER_RADIUS = Math.max(
+  0,
+  SWIPE_CORNER_RADIUS - SWIPE_BORDER_WIDTH,
+);
+
+const SWIPE_VERTICAL_INSET = Math.max(
+  0,
+  (SWIPE_HEIGHT - SWIPE_THUMB_SIZE) / 2,
+);
+
+const SWIPE_FILL_RADIUS = Math.max(
+  0,
+  SWIPE_CORNER_RADIUS - SWIPE_VERTICAL_INSET,
+);
+
+const SWIPE_TRACK_PADDING = Math.max(
+  0,
+  (SWIPE_HEIGHT -
+    SWIPE_BORDER_WIDTH * 2 -
+    SWIPE_THUMB_SIZE) /
+    2,
 );
 
 /* -------------------------------------------------------------------------- */
@@ -160,69 +193,302 @@ const getPositionValues = (position: CardPosition) => {
 };
 
 /* -------------------------------------------------------------------------- */
-/*                               POP BUTTON                                   */
+/*                            SWIPE BUY BUTTON                                */
 /* -------------------------------------------------------------------------- */
 
-type PopScaleButtonProps = {
-  children: React.ReactNode;
-  onPress: () => void;
-  style?: StyleProp<ViewStyle>;
-  disabled?: boolean;
+type SwipeBuyButtonProps = {
+  onSwipeSuccess: () => Promise<boolean>;
+  disabled: boolean;
+  colors: string[];
+  onGestureStateChange: (active: boolean) => void;
 };
 
-const PopScaleButton = ({
-  children,
-  onPress,
-  style,
-  disabled = false,
-}: PopScaleButtonProps) => {
-  const scaleValue = useRef(new Animated.Value(1)).current;
+const SwipeBuyButton = ({
+  onSwipeSuccess,
+  disabled,
+  colors,
+  onGestureStateChange,
+}: SwipeBuyButtonProps) => {
+  const dragProgress =
+    useRef(new Animated.Value(0)).current;
 
-  const handlePressIn = () => {
+  const maxDragRef = useRef(0);
+  const disabledRef = useRef(disabled);
+  const isCompletingRef = useRef(false);
+
+  const onSwipeSuccessRef =
+    useRef(onSwipeSuccess);
+
+  const onGestureStateChangeRef =
+    useRef(onGestureStateChange);
+
+  const SUCCESS_THRESHOLD = 0.75;
+
+  useEffect(() => {
+    disabledRef.current = disabled;
+
     if (disabled) {
-      return;
+      dragProgress.stopAnimation();
+      dragProgress.setValue(0);
+      isCompletingRef.current = false;
+      onGestureStateChangeRef.current(false);
     }
+  }, [disabled, dragProgress]);
 
-    Animated.spring(scaleValue, {
-      toValue: 0.95,
-      speed: 30,
-      bounciness: 2,
-      useNativeDriver: true,
+  useEffect(() => {
+    onSwipeSuccessRef.current = onSwipeSuccess;
+  }, [onSwipeSuccess]);
+
+  useEffect(() => {
+    onGestureStateChangeRef.current =
+      onGestureStateChange;
+  }, [onGestureStateChange]);
+
+  const resetSlider = () => {
+    isCompletingRef.current = false;
+    onGestureStateChangeRef.current(false);
+
+    Animated.spring(dragProgress, {
+      toValue: 0,
+      friction: 7,
+      tension: 85,
+      useNativeDriver: false,
     }).start();
   };
 
-  const handlePressOut = () => {
-    if (disabled) {
+  const completeSwipe = () => {
+    if (
+      disabledRef.current ||
+      isCompletingRef.current ||
+      maxDragRef.current <= 0
+    ) {
       return;
     }
 
-    Animated.spring(scaleValue, {
-      toValue: 1,
-      friction: 4,
-      tension: 40,
-      useNativeDriver: true,
-    }).start();
+    isCompletingRef.current = true;
+
+    Animated.timing(dragProgress, {
+      toValue: maxDragRef.current,
+      duration: 220,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: false,
+    }).start(async ({ finished }) => {
+      if (!finished) {
+        resetSlider();
+        return;
+      }
+
+      try {
+        const succeeded =
+          await onSwipeSuccessRef.current();
+
+        if (!succeeded) {
+          resetSlider();
+          return;
+        }
+
+        /*
+         * Navigation keeps the subscription screen in the stack.
+         * Resetting here makes the slider ready when the user returns.
+         */
+        setTimeout(() => {
+          resetSlider();
+        }, 300);
+      } catch {
+        resetSlider();
+      }
+    });
   };
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => {
+        return (
+          !disabledRef.current &&
+          !isCompletingRef.current
+        );
+      },
+
+      onMoveShouldSetPanResponder: (
+        _,
+        gestureState,
+      ) => {
+        if (
+          disabledRef.current ||
+          isCompletingRef.current
+        ) {
+          return false;
+        }
+
+        const horizontalMovement = Math.abs(
+          gestureState.dx,
+        );
+
+        const verticalMovement = Math.abs(
+          gestureState.dy,
+        );
+
+        return (
+          horizontalMovement > s(3) &&
+          horizontalMovement > verticalMovement
+        );
+      },
+
+      onPanResponderGrant: () => {
+        dragProgress.stopAnimation();
+        onGestureStateChangeRef.current(true);
+      },
+
+      onPanResponderMove: (_, gestureState) => {
+        if (
+          disabledRef.current ||
+          isCompletingRef.current ||
+          maxDragRef.current <= 0
+        ) {
+          return;
+        }
+
+        const nextProgress = Math.max(
+          0,
+          Math.min(
+            gestureState.dx,
+            maxDragRef.current,
+          ),
+        );
+
+        dragProgress.setValue(nextProgress);
+      },
+
+      onPanResponderRelease: (_, gestureState) => {
+        if (
+          disabledRef.current ||
+          isCompletingRef.current ||
+          maxDragRef.current <= 0
+        ) {
+          resetSlider();
+          return;
+        }
+
+        const releasedPosition = Math.max(
+          0,
+          Math.min(
+            gestureState.dx,
+            maxDragRef.current,
+          ),
+        );
+
+        const completionPoint =
+          maxDragRef.current * SUCCESS_THRESHOLD;
+
+        if (
+          releasedPosition >= completionPoint
+        ) {
+          completeSwipe();
+        } else {
+          resetSlider();
+        }
+      },
+
+      onPanResponderTerminate: () => {
+        if (!isCompletingRef.current) {
+          resetSlider();
+        }
+      },
+
+      onPanResponderTerminationRequest: () =>
+        false,
+
+      onShouldBlockNativeResponder: () => true,
+    }),
+  ).current;
+
+  const animatedSliderWidth = Animated.add(
+    dragProgress,
+    SWIPE_THUMB_SIZE,
+  );
 
   return (
-    <Pressable
-      disabled={disabled}
-      onPress={onPress}
-      onPressIn={handlePressIn}
-      onPressOut={handlePressOut}
-      style={[style, disabled && styles.disabledButton]}
+    <View
+      style={[
+        styles.swipeContainer,
+        disabled && styles.swipeDisabled,
+      ]}
+      onTouchStart={() => {
+        if (!disabledRef.current) {
+          onGestureStateChangeRef.current(true);
+        }
+      }}
+      onTouchEnd={() => {
+        if (!isCompletingRef.current) {
+          onGestureStateChangeRef.current(false);
+        }
+      }}
+      onTouchCancel={() => {
+        if (!isCompletingRef.current) {
+          onGestureStateChangeRef.current(false);
+        }
+      }}
+      onLayout={(event) => {
+        const measuredWidth =
+          event.nativeEvent.layout.width;
+
+        maxDragRef.current = Math.max(
+          0,
+          measuredWidth -
+            SWIPE_THUMB_SIZE -
+            SWIPE_TRACK_PADDING * 2 -
+            SWIPE_BORDER_WIDTH * 2,
+        );
+      }}
     >
-      <Animated.View
-        style={[
-          styles.popButtonContent,
-          {
-            transform: [{ scale: scaleValue }],
-          },
-        ]}
+      <LinearGradient
+        colors={colors}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+        style={styles.swipeBorderGradient}
       >
-        {children}
-      </Animated.View>
-    </Pressable>
+        <View style={styles.swipeInnerTrack}>
+          <Text
+            pointerEvents="none"
+            style={styles.swipeText}
+          >
+            SWIPE TO BUY
+          </Text>
+
+          <AnimatedLinearGradient
+            {...panResponder.panHandlers}
+            colors={colors}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={[
+              styles.swipeExpandingFill,
+              {
+                left: SWIPE_TRACK_PADDING,
+                width: animatedSliderWidth,
+                height: SWIPE_THUMB_SIZE,
+                borderRadius: SWIPE_FILL_RADIUS,
+              },
+            ]}
+          >
+            <View
+              style={[
+                styles.swipeArrowContainer,
+                {
+                  width: SWIPE_THUMB_SIZE,
+                  height: SWIPE_THUMB_SIZE,
+                  borderRadius:
+                    SWIPE_FILL_RADIUS,
+                },
+              ]}
+            >
+              <Text style={styles.swipeThumbArrow}>
+                »
+              </Text>
+            </View>
+          </AnimatedLinearGradient>
+        </View>
+      </LinearGradient>
+    </View>
   );
 };
 
@@ -230,30 +496,42 @@ const PopScaleButton = ({
 /*                           SUBSCRIPTION SCREEN                              */
 /* -------------------------------------------------------------------------- */
 
-export default function SubscriptionScreen({ navigation }: any) {
+export default function SubscriptionScreen({
+  navigation,
+}: any) {
   const initialActiveIndex = 1;
 
   const [activeIndex, setActiveIndex] =
     useState<number>(initialActiveIndex);
 
-  const [cardLayers, setCardLayers] = useState<number[]>(
-    SUBSCRIPTION_PLANS.map((_, index) =>
-      index === initialActiveIndex ? 4 : 1,
-    ),
-  );
+  const [cardLayers, setCardLayers] =
+    useState<number[]>(
+      SUBSCRIPTION_PLANS.map((_, index) =>
+        index === initialActiveIndex ? 4 : 1,
+      ),
+    );
 
   /*
    * Refs prevent stale values inside PanResponder,
    * which is created only once.
    */
-  const activeIndexRef = useRef(initialActiveIndex);
+  const activeIndexRef =
+    useRef(initialActiveIndex);
+
   const isAnimatingRef = useRef(false);
+
+  /*
+   * Prevents the outer carousel from capturing the
+   * horizontal gesture used by the inner buy slider.
+   */
+  const isBuySwipeActiveRef = useRef(false);
 
   /*
    * Swipes made during an animation are stored here.
    * They are executed immediately after the current transition.
    */
-  const swipeQueueRef = useRef<RotationDirection[]>([]);
+  const swipeQueueRef =
+    useRef<RotationDirection[]>([]);
 
   const requestRotationRef = useRef<
     (direction: RotationDirection) => void
@@ -271,14 +549,25 @@ export default function SubscriptionScreen({ navigation }: any) {
           initialActiveIndex,
         );
 
-        const values = getPositionValues(initialPosition);
+        const values =
+          getPositionValues(initialPosition);
 
         return {
-          translateX: new Animated.Value(values.translateX),
-          translateY: new Animated.Value(values.translateY),
-          scale: new Animated.Value(values.scale),
-          opacity: new Animated.Value(values.opacity),
-          rotation: new Animated.Value(values.rotation),
+          translateX: new Animated.Value(
+            values.translateX,
+          ),
+          translateY: new Animated.Value(
+            values.translateY,
+          ),
+          scale: new Animated.Value(
+            values.scale,
+          ),
+          opacity: new Animated.Value(
+            values.opacity,
+          ),
+          rotation: new Animated.Value(
+            values.rotation,
+          ),
         };
       }),
     ).current;
@@ -289,11 +578,19 @@ export default function SubscriptionScreen({ navigation }: any) {
   ) => {
     const values = getPositionValues(position);
 
-    animation.translateX.setValue(values.translateX);
-    animation.translateY.setValue(values.translateY);
+    animation.translateX.setValue(
+      values.translateX,
+    );
+
+    animation.translateY.setValue(
+      values.translateY,
+    );
+
     animation.scale.setValue(values.scale);
     animation.opacity.setValue(values.opacity);
-    animation.rotation.setValue(values.rotation);
+    animation.rotation.setValue(
+      values.rotation,
+    );
   };
 
   /*
@@ -305,23 +602,32 @@ export default function SubscriptionScreen({ navigation }: any) {
     animation: CardAnimationValues,
     destination: CardPosition,
   ) => {
-    const target = getPositionValues(destination);
+    const target =
+      getPositionValues(destination);
 
     return Animated.parallel(
       [
-        Animated.timing(animation.translateX, {
-          toValue: target.translateX,
-          duration: 210,
-          easing: Easing.out(Easing.cubic),
-          useNativeDriver: true,
-        }),
+        Animated.timing(
+          animation.translateX,
+          {
+            toValue: target.translateX,
+            duration: 210,
+            easing:
+              Easing.out(Easing.cubic),
+            useNativeDriver: true,
+          },
+        ),
 
-        Animated.timing(animation.translateY, {
-          toValue: target.translateY,
-          duration: 210,
-          easing: Easing.out(Easing.cubic),
-          useNativeDriver: true,
-        }),
+        Animated.timing(
+          animation.translateY,
+          {
+            toValue: target.translateY,
+            duration: 210,
+            easing:
+              Easing.out(Easing.cubic),
+            useNativeDriver: true,
+          },
+        ),
 
         Animated.timing(animation.scale, {
           toValue: target.scale,
@@ -330,19 +636,27 @@ export default function SubscriptionScreen({ navigation }: any) {
           useNativeDriver: true,
         }),
 
-        Animated.timing(animation.opacity, {
-          toValue: target.opacity,
-          duration: 190,
-          easing: Easing.out(Easing.quad),
-          useNativeDriver: true,
-        }),
+        Animated.timing(
+          animation.opacity,
+          {
+            toValue: target.opacity,
+            duration: 190,
+            easing:
+              Easing.out(Easing.quad),
+            useNativeDriver: true,
+          },
+        ),
 
-        Animated.timing(animation.rotation, {
-          toValue: target.rotation,
-          duration: 210,
-          easing: Easing.out(Easing.cubic),
-          useNativeDriver: true,
-        }),
+        Animated.timing(
+          animation.rotation,
+          {
+            toValue: target.rotation,
+            duration: 210,
+            easing:
+              Easing.out(Easing.cubic),
+            useNativeDriver: true,
+          },
+        ),
       ],
       {
         stopTogether: false,
@@ -360,43 +674,62 @@ export default function SubscriptionScreen({ navigation }: any) {
     animation: CardAnimationValues,
     destination: CardPosition,
   ) => {
-    const target = getPositionValues(destination);
+    const target =
+      getPositionValues(destination);
 
     return Animated.sequence([
       Animated.parallel(
         [
-          Animated.timing(animation.translateX, {
-            toValue: 0,
-            duration: 80,
-            easing: Easing.in(Easing.quad),
-            useNativeDriver: true,
-          }),
+          Animated.timing(
+            animation.translateX,
+            {
+              toValue: 0,
+              duration: 80,
+              easing:
+                Easing.in(Easing.quad),
+              useNativeDriver: true,
+            },
+          ),
 
-          Animated.timing(animation.translateY, {
-            toValue: vs(31),
-            duration: 80,
-            easing: Easing.in(Easing.quad),
-            useNativeDriver: true,
-          }),
+          Animated.timing(
+            animation.translateY,
+            {
+              toValue: vs(31),
+              duration: 80,
+              easing:
+                Easing.in(Easing.quad),
+              useNativeDriver: true,
+            },
+          ),
 
-          Animated.timing(animation.scale, {
-            toValue: 0.76,
-            duration: 80,
-            easing: Easing.in(Easing.quad),
-            useNativeDriver: true,
-          }),
+          Animated.timing(
+            animation.scale,
+            {
+              toValue: 0.76,
+              duration: 80,
+              easing:
+                Easing.in(Easing.quad),
+              useNativeDriver: true,
+            },
+          ),
 
-          Animated.timing(animation.opacity, {
-            toValue: 0.42,
-            duration: 80,
-            useNativeDriver: true,
-          }),
+          Animated.timing(
+            animation.opacity,
+            {
+              toValue: 0.42,
+              duration: 80,
+              useNativeDriver: true,
+            },
+          ),
 
-          Animated.timing(animation.rotation, {
-            toValue: 0,
-            duration: 80,
-            useNativeDriver: true,
-          }),
+          Animated.timing(
+            animation.rotation,
+            {
+              toValue: 0,
+              duration: 80,
+              useNativeDriver: true,
+            },
+          ),
         ],
         {
           stopTogether: false,
@@ -405,40 +738,60 @@ export default function SubscriptionScreen({ navigation }: any) {
 
       Animated.parallel(
         [
-          Animated.timing(animation.translateX, {
-            toValue: target.translateX,
-            duration: 130,
-            easing: Easing.out(Easing.cubic),
-            useNativeDriver: true,
-          }),
+          Animated.timing(
+            animation.translateX,
+            {
+              toValue: target.translateX,
+              duration: 130,
+              easing:
+                Easing.out(Easing.cubic),
+              useNativeDriver: true,
+            },
+          ),
 
-          Animated.timing(animation.translateY, {
-            toValue: target.translateY,
-            duration: 130,
-            easing: Easing.out(Easing.cubic),
-            useNativeDriver: true,
-          }),
+          Animated.timing(
+            animation.translateY,
+            {
+              toValue: target.translateY,
+              duration: 130,
+              easing:
+                Easing.out(Easing.cubic),
+              useNativeDriver: true,
+            },
+          ),
 
-          Animated.timing(animation.scale, {
-            toValue: target.scale,
-            duration: 130,
-            easing: Easing.out(Easing.cubic),
-            useNativeDriver: true,
-          }),
+          Animated.timing(
+            animation.scale,
+            {
+              toValue: target.scale,
+              duration: 130,
+              easing:
+                Easing.out(Easing.cubic),
+              useNativeDriver: true,
+            },
+          ),
 
-          Animated.timing(animation.opacity, {
-            toValue: target.opacity,
-            duration: 130,
-            easing: Easing.out(Easing.quad),
-            useNativeDriver: true,
-          }),
+          Animated.timing(
+            animation.opacity,
+            {
+              toValue: target.opacity,
+              duration: 130,
+              easing:
+                Easing.out(Easing.quad),
+              useNativeDriver: true,
+            },
+          ),
 
-          Animated.timing(animation.rotation, {
-            toValue: target.rotation,
-            duration: 130,
-            easing: Easing.out(Easing.cubic),
-            useNativeDriver: true,
-          }),
+          Animated.timing(
+            animation.rotation,
+            {
+              toValue: target.rotation,
+              duration: 130,
+              easing:
+                Easing.out(Easing.cubic),
+              useNativeDriver: true,
+            },
+          ),
         ],
         {
           stopTogether: false,
@@ -448,14 +801,17 @@ export default function SubscriptionScreen({ navigation }: any) {
   };
 
   const processNextQueuedSwipe = () => {
-    const nextDirection = swipeQueueRef.current.shift();
+    const nextDirection =
+      swipeQueueRef.current.shift();
 
     if (!nextDirection) {
       return;
     }
 
     requestAnimationFrame(() => {
-      startRotationRef.current(nextDirection);
+      startRotationRef.current(
+        nextDirection,
+      );
     });
   };
 
@@ -467,14 +823,20 @@ export default function SubscriptionScreen({ navigation }: any) {
       return;
     }
 
-    const currentActiveIndex = activeIndexRef.current;
-    const totalCards = SUBSCRIPTION_PLANS.length;
+    const currentActiveIndex =
+      activeIndexRef.current;
+
+    const totalCards =
+      SUBSCRIPTION_PLANS.length;
 
     const nextActiveIndex =
       direction === 'right'
-        ? (currentActiveIndex - 1 + totalCards) %
+        ? (currentActiveIndex -
+            1 +
+            totalCards) %
           totalCards
-        : (currentActiveIndex + 1) % totalCards;
+        : (currentActiveIndex + 1) %
+          totalCards;
 
     isAnimatingRef.current = true;
 
@@ -482,78 +844,98 @@ export default function SubscriptionScreen({ navigation }: any) {
      * Incoming front card receives the highest layer.
      * The wrapping card remains behind the other cards.
      */
-    const transitionLayers = SUBSCRIPTION_PLANS.map(
-      (_, cardIndex) => {
-        const oldPosition = getCardPosition(
-          cardIndex,
-          currentActiveIndex,
-        );
+    const transitionLayers =
+      SUBSCRIPTION_PLANS.map(
+        (_, cardIndex) => {
+          const oldPosition =
+            getCardPosition(
+              cardIndex,
+              currentActiveIndex,
+            );
 
-        const nextPosition = getCardPosition(
-          cardIndex,
-          nextActiveIndex,
-        );
+          const nextPosition =
+            getCardPosition(
+              cardIndex,
+              nextActiveIndex,
+            );
 
-        const isWrappingCard =
-          (direction === 'right' &&
-            oldPosition === RIGHT_POSITION &&
-            nextPosition === LEFT_POSITION) ||
-          (direction === 'left' &&
-            oldPosition === LEFT_POSITION &&
-            nextPosition === RIGHT_POSITION);
+          const isWrappingCard =
+            (direction === 'right' &&
+              oldPosition ===
+                RIGHT_POSITION &&
+              nextPosition ===
+                LEFT_POSITION) ||
+            (direction === 'left' &&
+              oldPosition ===
+                LEFT_POSITION &&
+              nextPosition ===
+                RIGHT_POSITION);
 
-        if (nextPosition === FRONT_POSITION) {
-          return 5;
-        }
+          if (
+            nextPosition ===
+            FRONT_POSITION
+          ) {
+            return 5;
+          }
 
-        if (oldPosition === FRONT_POSITION) {
-          return 4;
-        }
+          if (
+            oldPosition ===
+            FRONT_POSITION
+          ) {
+            return 4;
+          }
 
-        if (isWrappingCard) {
-          return 1;
-        }
+          if (isWrappingCard) {
+            return 1;
+          }
 
-        return 2;
-      },
-    );
+          return 2;
+        },
+      );
 
     setCardLayers(transitionLayers);
 
     requestAnimationFrame(() => {
-      const animations = cardAnimations.map(
-        (animation, cardIndex) => {
-          const oldPosition = getCardPosition(
-            cardIndex,
-            currentActiveIndex,
-          );
+      const animations =
+        cardAnimations.map(
+          (animation, cardIndex) => {
+            const oldPosition =
+              getCardPosition(
+                cardIndex,
+                currentActiveIndex,
+              );
 
-          const nextPosition = getCardPosition(
-            cardIndex,
-            nextActiveIndex,
-          );
+            const nextPosition =
+              getCardPosition(
+                cardIndex,
+                nextActiveIndex,
+              );
 
-          const shouldWrapBehind =
-            (direction === 'right' &&
-              oldPosition === RIGHT_POSITION &&
-              nextPosition === LEFT_POSITION) ||
-            (direction === 'left' &&
-              oldPosition === LEFT_POSITION &&
-              nextPosition === RIGHT_POSITION);
+            const shouldWrapBehind =
+              (direction === 'right' &&
+                oldPosition ===
+                  RIGHT_POSITION &&
+                nextPosition ===
+                  LEFT_POSITION) ||
+              (direction === 'left' &&
+                oldPosition ===
+                  LEFT_POSITION &&
+                nextPosition ===
+                  RIGHT_POSITION);
 
-          if (shouldWrapBehind) {
-            return createRearWrapAnimation(
+            if (shouldWrapBehind) {
+              return createRearWrapAnimation(
+                animation,
+                nextPosition,
+              );
+            }
+
+            return createStandardAnimation(
               animation,
               nextPosition,
             );
-          }
-
-          return createStandardAnimation(
-            animation,
-            nextPosition,
-          );
-        },
-      );
+          },
+        );
 
       Animated.parallel(animations, {
         stopTogether: false,
@@ -564,10 +946,11 @@ export default function SubscriptionScreen({ navigation }: any) {
          */
         cardAnimations.forEach(
           (animation, cardIndex) => {
-            const finalPosition = getCardPosition(
-              cardIndex,
-              nextActiveIndex,
-            );
+            const finalPosition =
+              getCardPosition(
+                cardIndex,
+                nextActiveIndex,
+              );
 
             setExactCardPosition(
               animation,
@@ -576,12 +959,17 @@ export default function SubscriptionScreen({ navigation }: any) {
           },
         );
 
-        activeIndexRef.current = nextActiveIndex;
+        activeIndexRef.current =
+          nextActiveIndex;
+
         setActiveIndex(nextActiveIndex);
 
         setCardLayers(
-          SUBSCRIPTION_PLANS.map((_, cardIndex) =>
-            cardIndex === nextActiveIndex ? 4 : 1,
+          SUBSCRIPTION_PLANS.map(
+            (_, cardIndex) =>
+              cardIndex === nextActiveIndex
+                ? 4
+                : 1,
           ),
         );
 
@@ -592,7 +980,8 @@ export default function SubscriptionScreen({ navigation }: any) {
     });
   };
 
-  startRotationRef.current = startRotation;
+  startRotationRef.current =
+    startRotation;
 
   const requestRotation = (
     direction: RotationDirection,
@@ -605,9 +994,12 @@ export default function SubscriptionScreen({ navigation }: any) {
     startRotationRef.current(direction);
   };
 
-  requestRotationRef.current = requestRotation;
+  requestRotationRef.current =
+    requestRotation;
 
-  const handleCardPress = (cardIndex: number) => {
+  const handleCardPress = (
+    cardIndex: number,
+  ) => {
     if (
       isAnimatingRef.current ||
       cardIndex === activeIndexRef.current
@@ -628,41 +1020,54 @@ export default function SubscriptionScreen({ navigation }: any) {
     requestRotationRef.current('left');
   };
 
-  const handleBuyPress = (
-    _plan: SubscriptionPlan,
+  const handleSwipeBuy = async (
     cardIndex: number,
-  ) => {
-    if (isAnimatingRef.current) {
-      return;
+  ): Promise<boolean> => {
+    if (
+      isAnimatingRef.current ||
+      cardIndex !== activeIndexRef.current
+    ) {
+      return false;
     }
 
-    if (cardIndex !== activeIndexRef.current) {
-      handleCardPress(cardIndex);
-      return;
-    }
+    isBuySwipeActiveRef.current = false;
 
     navigation.navigate('DepositMoney');
+
+    return true;
+  };
+
+  const handleBuyGestureState = (
+    active: boolean,
+  ) => {
+    isBuySwipeActiveRef.current = active;
   };
 
   const panResponder = useRef(
     PanResponder.create({
-      onStartShouldSetPanResponder: () => false,
+      onStartShouldSetPanResponder: () =>
+        false,
 
       onMoveShouldSetPanResponder: (
         _,
         gestureState,
       ) => {
-        const horizontalDistance = Math.abs(
-          gestureState.dx,
-        );
+        if (
+          isBuySwipeActiveRef.current
+        ) {
+          return false;
+        }
 
-        const verticalDistance = Math.abs(
-          gestureState.dy,
-        );
+        const horizontalDistance =
+          Math.abs(gestureState.dx);
+
+        const verticalDistance =
+          Math.abs(gestureState.dy);
 
         return (
           horizontalDistance > 8 &&
-          horizontalDistance > verticalDistance * 1.15
+          horizontalDistance >
+            verticalDistance * 1.15
         );
       },
 
@@ -670,25 +1075,43 @@ export default function SubscriptionScreen({ navigation }: any) {
         _,
         gestureState,
       ) => {
-        const horizontalDistance = Math.abs(
-          gestureState.dx,
-        );
+        if (
+          isBuySwipeActiveRef.current
+        ) {
+          return false;
+        }
 
-        const verticalDistance = Math.abs(
-          gestureState.dy,
-        );
+        const horizontalDistance =
+          Math.abs(gestureState.dx);
+
+        const verticalDistance =
+          Math.abs(gestureState.dy);
 
         return (
           horizontalDistance > 10 &&
-          horizontalDistance > verticalDistance * 1.15
+          horizontalDistance >
+            verticalDistance * 1.15
         );
       },
 
-      onPanResponderTerminationRequest: () => false,
+      onPanResponderTerminationRequest:
+        () => false,
 
-      onPanResponderRelease: (_, gestureState) => {
-        const horizontalDistance = gestureState.dx;
-        const horizontalVelocity = gestureState.vx;
+      onPanResponderRelease: (
+        _,
+        gestureState,
+      ) => {
+        if (
+          isBuySwipeActiveRef.current
+        ) {
+          return;
+        }
+
+        const horizontalDistance =
+          gestureState.dx;
+
+        const horizontalVelocity =
+          gestureState.vx;
 
         const swipedRight =
           horizontalDistance > 34 ||
@@ -699,12 +1122,16 @@ export default function SubscriptionScreen({ navigation }: any) {
           horizontalVelocity < -0.35;
 
         if (swipedRight) {
-          requestRotationRef.current('right');
+          requestRotationRef.current(
+            'right',
+          );
           return;
         }
 
         if (swipedLeft) {
-          requestRotationRef.current('left');
+          requestRotationRef.current(
+            'left',
+          );
         }
       },
 
@@ -712,7 +1139,8 @@ export default function SubscriptionScreen({ navigation }: any) {
         // Cards rotate only after a completed swipe.
       },
 
-      onShouldBlockNativeResponder: () => true,
+      onShouldBlockNativeResponder: () =>
+        true,
     }),
   ).current;
 
@@ -724,7 +1152,11 @@ export default function SubscriptionScreen({ navigation }: any) {
       />
 
       <LinearGradient
-        colors={['#ffffff', '#f5f5f5', '#ebebeb']}
+        colors={[
+          '#ffffff',
+          '#f5f5f5',
+          '#ebebeb',
+        ]}
         style={styles.screen}
       >
         <SafeAreaView style={styles.safeArea}>
@@ -737,8 +1169,9 @@ export default function SubscriptionScreen({ navigation }: any) {
           </View>
 
           <Text style={styles.subtitleText}>
-            Unlock the full potential of your account by
-            subscribing to one of our premium plans.
+            Unlock the full potential of your
+            account by subscribing to one of our
+            premium plans.
           </Text>
 
           {/* Infinite circular carousel */}
@@ -772,10 +1205,12 @@ export default function SubscriptionScreen({ navigation }: any) {
                     style={[
                       styles.cardWrapper,
                       {
-                        zIndex: cardLayers[cardIndex],
+                        zIndex:
+                          cardLayers[cardIndex],
                         elevation:
                           cardLayers[cardIndex],
-                        opacity: animation.opacity,
+                        opacity:
+                          animation.opacity,
                         transform: [
                           {
                             translateX:
@@ -786,7 +1221,8 @@ export default function SubscriptionScreen({ navigation }: any) {
                               animation.translateY,
                           },
                           {
-                            scale: animation.scale,
+                            scale:
+                              animation.scale,
                           },
                           {
                             rotateZ,
@@ -797,9 +1233,13 @@ export default function SubscriptionScreen({ navigation }: any) {
                   >
                     <Pressable
                       onPress={() =>
-                        handleCardPress(cardIndex)
+                        handleCardPress(
+                          cardIndex,
+                        )
                       }
-                      style={styles.cardTouchArea}
+                      style={
+                        styles.cardTouchArea
+                      }
                     >
                       {/*
                        * Layer 1: strong gradient border
@@ -810,41 +1250,76 @@ export default function SubscriptionScreen({ navigation }: any) {
                           SECONDARY,
                           PRIMARY,
                         ]}
-                        locations={[0, 0.52, 1]}
+                        locations={[
+                          0,
+                          0.52,
+                          1,
+                        ]}
                         start={{ x: 0, y: 0 }}
                         end={{ x: 1, y: 1 }}
-                        style={styles.strongGradientBorder}
+                        style={
+                          styles.strongGradientBorder
+                        }
                       >
                         {/*
                          * Layer 2: white outline / visual gap
                          */}
-                        <View style={styles.whiteOutline}>
+                        <View
+                          style={
+                            styles.whiteOutline
+                          }
+                        >
                           {/*
                            * Layer 3: actual gradient card
                            */}
                           <LinearGradient
-                            colors={[PRIMARY, SECONDARY]}
-                            start={{ x: 0, y: 0 }}
-                            end={{ x: 1, y: 1 }}
-                            style={styles.cardGradient}
+                            colors={[
+                              PRIMARY,
+                              SECONDARY,
+                            ]}
+                            start={{
+                              x: 0,
+                              y: 0,
+                            }}
+                            end={{
+                              x: 1,
+                              y: 1,
+                            }}
+                            style={
+                              styles.cardGradient
+                            }
                           >
-                            <Text style={styles.planTitle}>
+                            <Text
+                              style={
+                                styles.planTitle
+                              }
+                            >
                               {plan.title}
                             </Text>
 
-                            <View style={styles.priceRow}>
-                              <Text style={styles.priceText}>
+                            <View
+                              style={styles.priceRow}
+                            >
+                              <Text
+                                style={
+                                  styles.priceText
+                                }
+                              >
                                 ${plan.price}
                               </Text>
 
                               <Text
-                                style={styles.durationText}
+                                style={
+                                  styles.durationText
+                                }
                               >
                                 {plan.duration}
                               </Text>
                             </View>
 
-                            <View style={styles.divider} />
+                            <View
+                              style={styles.divider}
+                            />
 
                             <View
                               style={
@@ -889,26 +1364,26 @@ export default function SubscriptionScreen({ navigation }: any) {
                             </View>
 
                             <View
-                              style={styles.flexSpacer}
+                              style={
+                                styles.flexSpacer
+                              }
                             />
 
-                            <PopScaleButton
-                              onPress={() =>
-                                handleBuyPress(
-                                  plan,
+                            <SwipeBuyButton
+                              disabled={!isActive}
+                              colors={[
+                                PRIMARY,
+                                SECONDARY,
+                              ]}
+                              onGestureStateChange={
+                                handleBuyGestureState
+                              }
+                              onSwipeSuccess={() =>
+                                handleSwipeBuy(
                                   cardIndex,
                                 )
                               }
-                              style={styles.buyButton}
-                            >
-                              <Text
-                                style={styles.buyButtonText}
-                              >
-                                {isActive
-                                  ? 'BUY NOW'
-                                  : 'BUY NOW'}
-                              </Text>
-                            </PopScaleButton>
+                            />
                           </LinearGradient>
                         </View>
                       </LinearGradient>
@@ -1047,7 +1522,8 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 1,
     marginVertical: vs(15),
-    backgroundColor: 'rgba(255, 255, 255, 0.24)',
+    backgroundColor:
+      'rgba(255, 255, 255, 0.24)',
   },
 
   featuresContainer: {
@@ -1069,7 +1545,8 @@ const styles = StyleSheet.create({
 
     marginRight: s(10),
 
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor:
+      'rgba(255, 255, 255, 0.2)',
   },
 
   checkIcon: {
@@ -1090,13 +1567,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
-  buyButton: {
-    width: '100%',
-    paddingVertical: vs(14),
-    borderRadius: ms(20),
-    marginTop: vs(10),
+  /* Swipe buy button */
 
-    backgroundColor: '#ffffff',
+  swipeContainer: {
+    width: '100%',
+    height: SWIPE_HEIGHT,
+    marginTop: vs(10),
+    borderRadius: SWIPE_CORNER_RADIUS,
+    backgroundColor: 'transparent',
 
     shadowColor: '#000000',
     shadowOffset: {
@@ -1109,20 +1587,66 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
 
-  buyButtonText: {
-    color: '#000000a6',
-    fontSize: ms(15),
-    fontWeight: '900',
-    letterSpacing: ms(1),
+  swipeDisabled: {
+    opacity: 0.82,
   },
 
-  popButtonContent: {
-    width: '100%',
-    alignItems: 'center',
+  swipeBorderGradient: {
+    flex: 1,
+    padding: SWIPE_BORDER_WIDTH,
+    borderRadius: SWIPE_CORNER_RADIUS,
+  },
+
+  swipeInnerTrack: {
+    flex: 1,
+    position: 'relative',
     justifyContent: 'center',
+    overflow: 'hidden',
+    borderRadius: SWIPE_INNER_RADIUS,
+    backgroundColor: '#ffffff',
   },
 
-  disabledButton: {
-    opacity: 0.55,
+  swipeText: {
+    position: 'absolute',
+    width: '100%',
+    zIndex: 1,
+    textAlign: 'center',
+    color: '#9000ff',
+    fontSize: ms(12),
+    fontWeight: '900',
+    letterSpacing: ms(1.4),
+    marginLeft: s(20), // Adjust for the arrow icon
+  },
+
+  swipeExpandingFill: {
+    position: 'absolute',
+    justifyContent: 'center',
+    alignItems: 'flex-end',
+    overflow: 'hidden',
+    zIndex: 2,
+
+    shadowColor: '#000000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+
+    elevation: 5,
+  },
+
+  swipeArrowContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexShrink: 0,
+  },
+
+  swipeThumbArrow: {
+    marginLeft: s(2),
+    marginBottom: vs(3),
+    color: '#ffffff',
+    fontSize: ms(24),
+    fontWeight: '900',
   },
 });
