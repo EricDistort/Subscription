@@ -92,10 +92,10 @@ export default function DirectReferralsScreen() {
 
   return (
     <ScreenWrapper>
-      <StatusBar barStyle="light-content" backgroundColor="#000" />
-      {/* 🌑 Background: Dark Cyan/Magenta Gradient */}
+      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
+      {/* 🌑 Background: Light Theme Gradient */}
       <LinearGradient
-        colors={['#000000', '#0a000e', '#170020']}
+        colors={['#ffffff', '#f5f5f5', '#ebebeb']}
         style={{ flex: 1 }}
       >
         <SafeAreaView style={styles.safeArea}>
@@ -133,7 +133,7 @@ export default function DirectReferralsScreen() {
                     onRefresh={onRefresh}
                     tintColor="#ff00aa"
                     colors={['#ff00aa', '#9000ff']}
-                    progressBackgroundColor="#1c140d"
+                    progressBackgroundColor="#ffffff"
                   />
                 }
               >
@@ -232,7 +232,7 @@ const styles = StyleSheet.create({
   },
   headerSubtitle: {
     fontSize: ms(14),
-    color: 'rgba(255,255,255,0.5)',
+    color: 'rgba(0,0,0,0.5)',
     marginBottom: vs(10),
   },
   headerLine: {
@@ -255,7 +255,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   card: {
-    backgroundColor: 'rgba(255,255,255,0.03)',
+    backgroundColor: 'rgba(0,0,0,0.03)',
     borderRadius: ms(30),
     padding: s(16),
     flexDirection: 'row',
@@ -292,7 +292,7 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
   username: {
-    color: '#fff',
+    color: '#000000',
     fontSize: ms(16),
     fontWeight: '700',
     marginBottom: vs(4),
@@ -318,7 +318,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   businessLabel: {
-    color: 'rgba(255,255,255,0.4)',
+    color: 'rgba(0,0,0,0.4)',
     fontSize: ms(10),
     textTransform: 'uppercase',
     marginBottom: vs(2),
@@ -336,7 +336,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   noReferrals: {
-    color: 'rgba(255,255,255,0.3)',
+    color: 'rgba(0,0,0,0.3)',
     fontSize: ms(16),
   },
 });

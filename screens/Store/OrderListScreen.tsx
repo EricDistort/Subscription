@@ -118,7 +118,7 @@ export default function OrdersScreen() {
           <View style={styles.timelineContainer}>
             <View style={styles.timelineTrack} />
             <LinearGradient
-              colors={[config.color, '#1a0011']} // Blending to Dark Cyan
+              colors={[config.color, '#e0e0e0']}
               style={[styles.timelineFill, { height: config.percent }]}
             />
           </View>
@@ -188,10 +188,10 @@ export default function OrdersScreen() {
 
   return (
     <ScreenWrapper>
-      <StatusBar barStyle="light-content" />
-      {/* 🌑 Background: Dark Cyan/Magenta Gradient */}
+      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
+      {/* 🌑 Background: Light Theme Gradient */}
       <LinearGradient
-        colors={['#000000', '#0a000e', '#170020']}
+        colors={['#ffffff', '#f5f5f5', '#ebebeb']}
         style={{ flex: 1 }}
       >
         <SafeAreaView style={styles.safeArea}>
@@ -246,7 +246,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: ms(28),
     fontWeight: '900',
-    color: '#fff',
+    color: '#000000',
     letterSpacing: ms(0.5),
     marginBottom: vs(5),
   },
@@ -261,7 +261,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   noOrdersText: {
-    color: 'rgba(255,255,255,0.4)',
+    color: 'rgba(0,0,0,0.4)',
     fontSize: ms(16),
   },
 
@@ -283,23 +283,23 @@ const styles = StyleSheet.create({
     opacity: 0.8,
   },
   card: {
-    backgroundColor: '#0a0a0a', // Deep Black to match store
+    backgroundColor: '#ffffff', // Light background to match other screens
     borderRadius: ms(24),
     flexDirection: 'row',
     overflow: 'hidden',
     borderWidth: 1,
     borderColor: 'rgba(255, 0, 170, 0.1)', // Cyan border
-    elevation: 10,
+    elevation: 5,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: vs(10) },
-    shadowOpacity: 0.5,
-    shadowRadius: ms(15),
+    shadowOffset: { width: 0, height: vs(4) },
+    shadowOpacity: 0.1,
+    shadowRadius: ms(8),
   },
 
   /* Timeline Strip (Left) */
   timelineContainer: {
     width: s(6),
-    backgroundColor: '#1a1a1a',
+    backgroundColor: '#e0e0e0',
     marginVertical: vs(20),
     marginLeft: s(15),
     borderRadius: ms(3),
@@ -336,7 +336,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: s(10),
     paddingVertical: vs(4),
     borderRadius: ms(20),
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: '#ffffff',
   },
   statusDot: {
     width: s(6),
@@ -350,7 +350,7 @@ const styles = StyleSheet.create({
     letterSpacing: ms(0.5),
   },
   dateText: {
-    color: 'rgba(255,255,255,0.4)',
+    color: 'rgba(0,0,0,0.4)',
     fontSize: ms(12),
     fontWeight: '600',
   },
@@ -377,7 +377,7 @@ const styles = StyleSheet.create({
 
   /* Details Block */
   detailsBlock: {
-    backgroundColor: 'rgba(255, 0, 170, 0.03)', // Subtle cyan tint
+    backgroundColor: 'rgba(255, 0, 170, 0.03)', // Subtle cyan/magenta tint
     borderRadius: ms(16),
     padding: s(12),
     borderWidth: 1,
@@ -390,7 +390,7 @@ const styles = StyleSheet.create({
     marginBottom: vs(10),
   },
   productName: {
-    color: '#fff',
+    color: '#000000',
     fontSize: ms(16),
     fontWeight: '700',
     flex: 1,
@@ -403,7 +403,7 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: 1,
-    backgroundColor: 'rgba(255,255,255,0.08)',
+    backgroundColor: 'rgba(0,0,0,0.08)',
     marginBottom: vs(10),
   },
   infoRow: {
@@ -415,13 +415,13 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: ms(10),
-    color: 'rgba(255,255,255,0.4)',
+    color: 'rgba(0,0,0,0.4)',
     textTransform: 'uppercase',
     marginBottom: vs(2),
   },
   value: {
     fontSize: ms(12),
-    color: '#fff',
+    color: '#000000',
     fontWeight: '500',
   },
 });

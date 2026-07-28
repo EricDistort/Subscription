@@ -190,10 +190,10 @@ export default function StoreScreen({ navigation }: any) {
 
   return (
     <ScreenWrapper>
-      <StatusBar barStyle="light-content" />
-      {/* 🌑 Background: Dark Cyan/Magenta Gradient */}
+      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
+      {/* 🌑 Background: Light Theme Gradient */}
       <LinearGradient
-        colors={['#000000', '#0a000e', '#170020']}
+        colors={['#ffffff', '#f5f5f5', '#ebebeb']}
         style={{ flex: 1 }}
       >
         <SafeAreaView style={styles.safeArea}>
@@ -230,7 +230,7 @@ export default function StoreScreen({ navigation }: any) {
 
                 <View style={styles.modalContent}>
                   <LinearGradient
-                    colors={['#1a0011', '#000000']}
+                    colors={['#ffffff', '#f5f5f5']}
                     style={styles.modalCard}
                   >
                     {selectedProduct && (
@@ -263,7 +263,7 @@ export default function StoreScreen({ navigation }: any) {
                         <TextInput
                           style={styles.input}
                           placeholder="Enter contact number"
-                          placeholderTextColor="rgba(255,255,255,0.3)"
+                          placeholderTextColor="rgba(0,0,0,0.4)"
                           value={mobileNumber}
                           onChangeText={setMobileNumber}
                           keyboardType="phone-pad"
@@ -273,7 +273,7 @@ export default function StoreScreen({ navigation }: any) {
                         <TextInput
                           style={styles.input}
                           placeholder="Enter full address"
-                          placeholderTextColor="rgba(255,255,255,0.3)"
+                          placeholderTextColor="rgba(0,0,0,0.4)"
                           value={location}
                           onChangeText={setLocation}
                         />
@@ -333,7 +333,7 @@ const styles = StyleSheet.create({
     letterSpacing: ms(0.5),
   },
   subtitle: {
-    color: 'rgba(255,255,255,0.5)',
+    color: 'rgba(0,0,0,0.5)',
     fontSize: ms(12),
   },
   // 🎨 CHANGED: History Button Colors
@@ -374,7 +374,7 @@ const styles = StyleSheet.create({
     padding: 1, // Visual border
   },
   cardInner: {
-    backgroundColor: '#0a0a0a',
+    backgroundColor: '#ffffff',
     borderRadius: ms(15),
     padding: s(8),
     alignItems: 'center',
@@ -385,7 +385,7 @@ const styles = StyleSheet.create({
     borderRadius: ms(10),
     overflow: 'hidden',
     marginBottom: vs(8),
-    backgroundColor: '#000',
+    backgroundColor: '#f0f0f0',
   },
   image: {
     width: '100%',
@@ -435,7 +435,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.85)',
+    backgroundColor: 'rgba(0,0,0,0.5)',
   },
   modalBackdrop: {
     position: 'absolute',
@@ -476,7 +476,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: vs(15),
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    backgroundColor: 'rgba(0,0,0,0.03)',
     padding: s(10),
     borderRadius: ms(12),
   },
@@ -485,13 +485,13 @@ const styles = StyleSheet.create({
     height: s(60),
     borderRadius: ms(8),
     marginRight: s(12),
-    backgroundColor: '#000',
+    backgroundColor: '#f0f0f0',
   },
   summaryText: {
     flex: 1,
   },
   summaryName: {
-    color: '#fff',
+    color: '#000000',
     fontSize: ms(16),
     fontWeight: '700',
     marginBottom: vs(2),
@@ -504,13 +504,13 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: 1,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: 'rgba(0,0,0,0.1)',
     marginBottom: vs(15),
   },
 
   /* Inputs */
   inputLabel: {
-    color: 'rgba(255,255,255,0.6)',
+    color: 'rgba(0,0,0,0.6)',
     fontSize: ms(12),
     marginBottom: vs(6),
     marginLeft: s(4),
@@ -519,10 +519,10 @@ const styles = StyleSheet.create({
     width: '100%',
     borderRadius: ms(12),
     marginBottom: vs(15),
-    backgroundColor: '#000',
+    backgroundColor: '#ffffff',
     borderWidth: 1,
     borderColor: 'rgba(255, 0, 170, 0.15)', // Cyan tint
-    color: '#fff',
+    color: '#000000',
     paddingHorizontal: s(15),
     paddingVertical: vs(10),
     fontSize: ms(14),

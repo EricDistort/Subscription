@@ -45,13 +45,13 @@ export default function TransactionDetailsScreen() {
 
   return (
     <ScreenWrapper>
-      {/* 🌑 Screen Background: Dark Cyan/Magenta Gradient */}
+      {/* 🌑 Screen Background: Light Theme Gradient */}
       <LinearGradient
-        colors={['#000000', '#0a000e', '#170020']}
+        colors={['#ffffff', '#f5f5f5', '#ebebeb']}
         style={{ flex: 1 }}
       >
         <StatusBar
-          barStyle="light-content"
+          barStyle="dark-content"
           translucent
           backgroundColor="transparent"
         />
@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
   bottomContainer: {
     height: '100%',
     width: '100%',
-    backgroundColor: '#0a0a0a', // Deep Obsidian
+    backgroundColor: '#ffffff', // Light background
     borderTopLeftRadius: ms(30),
     borderTopRightRadius: ms(30),
     overflow: 'hidden',
@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
 
   /* Typography */
   label: {
-    color: 'rgba(255,255,255,0.4)',
+    color: 'rgba(0,0,0,0.4)',
     fontSize: ms(11),
     textTransform: 'uppercase',
     fontWeight: '600',
@@ -248,7 +248,7 @@ const styles = StyleSheet.create({
     letterSpacing: ms(0.5),
   },
   subValue: {
-    color: '#888',
+    color: '#666666',
     fontSize: ms(12),
     marginTop: vs(1),
   },

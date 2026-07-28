@@ -23,7 +23,7 @@ const SplashScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000000ff', // Match your Lottie background
+    backgroundColor: 'rgb(255, 255, 255)', // Match your Lottie background
     justifyContent: 'center',
     alignItems: 'center',
   },

@@ -59,10 +59,10 @@ export default function WebinarScreen({ navigation }: any) {
 
   return (
     <ScreenWrapper>
-      <StatusBar barStyle="light-content" backgroundColor="#000" />
-      {/* 🌑 Background: Dark Cyan/Magenta Gradient matching theme */}
+      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
+      {/* 🌑 Background: Light Theme Gradient */}
       <LinearGradient
-        colors={['#000000', '#0a1a1a', '#150a1a']}
+        colors={['#ffffff', '#f5f5f5', '#ebebeb']}
         style={{ flex: 1 }}
       >
         <SafeAreaView style={styles.container}>
@@ -74,13 +74,13 @@ export default function WebinarScreen({ navigation }: any) {
                 startInLoadingState={true}
                 renderLoading={() => (
                   <View style={styles.loaderContainer}>
-                    <ActivityIndicator size="large" color="#00ffff" />
+                    <ActivityIndicator size="large" color="#ff00aa" />
                     <Text style={styles.loadingText}>
                       Connecting to Zoom...
                     </Text>
                   </View>
                 )}
-                style={{ flex: 1, backgroundColor: '#000' }}
+                style={{ flex: 1, backgroundColor: '#ffffff' }}
                 allowsInlineMediaPlayback={true}
                 mediaPlaybackRequiresUserAction={false}
                 javaScriptEnabled={true}
@@ -88,7 +88,7 @@ export default function WebinarScreen({ navigation }: any) {
               />
             ) : (
               <View style={styles.loaderContainer}>
-                <ActivityIndicator size="large" color="#00ffff" />
+                <ActivityIndicator size="large" color="#ff00aa" />
               </View>
             )}
           </View>
@@ -115,23 +115,23 @@ const styles = StyleSheet.create({
   webViewContainer: {
     height: vs(350), // Fixed height for video area
     width: '95%',
-    backgroundColor: '#000',
+    backgroundColor: '#ffffff',
     marginTop: vs(30),
     borderRadius: ms(20),
     overflow: 'hidden',
     alignSelf: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(0, 255, 255, 0.2)', // Cyan Border
+    borderColor: 'rgba(255, 0, 170, 0.2)', // Cyan/Magenta Border
   },
   loaderContainer: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: '#000',
+    backgroundColor: '#ffffff',
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 10,
   },
   loadingText: {
-    color: '#00ffff', // Cyan Text
+    color: '#ff00aa', // Cyan/Magenta Text
     marginTop: vs(15),
     fontSize: ms(14),
   },
@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
   infoTitle: {
     fontSize: ms(22),
     fontWeight: 'bold',
-    color: '#00ffff', // Cyan Title
+    color: '#ff00aa', // Cyan/Magenta Title
     marginBottom: vs(10),
     letterSpacing: 0.5,
   },
@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
   },
   infoDesc: {
     fontSize: ms(14),
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: 'rgba(0, 0, 0, 0.7)',
     lineHeight: ms(20),
     paddingBottom: vs(20),
   },

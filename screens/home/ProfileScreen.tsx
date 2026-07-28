@@ -169,10 +169,10 @@ export default function ProfileScreen({ navigation }: any) {
 
   return (
     <ScreenWrapper>
-      <StatusBar barStyle="light-content" backgroundColor="#000" />
-      {/* 🌑 Background: Dark Cyan/Magenta Gradient */}
+      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
+      {/* 🌑 Background: Light Theme Gradient */}
       <LinearGradient
-        colors={['#000000', '#0a000e', '#170020']}
+        colors={['#ffffff', '#f5f5f5', '#ebebeb']}
         style={{ flex: 1 }}
       >
         <SafeAreaView style={styles.safeArea}>
@@ -244,7 +244,7 @@ export default function ProfileScreen({ navigation }: any) {
                       value={username}
                       onChangeText={setUsername}
                       placeholder="Username"
-                      placeholderTextColor="rgba(255,255,255,0.3)"
+                      placeholderTextColor="rgba(0,0,0,0.4)"
                     />
                   </View>
                   <View style={{ flex: 1 }}>
@@ -255,7 +255,7 @@ export default function ProfileScreen({ navigation }: any) {
                       onChangeText={setMobile}
                       keyboardType="phone-pad"
                       placeholder="Mobile"
-                      placeholderTextColor="rgba(255,255,255,0.3)"
+                      placeholderTextColor="rgba(0,0,0,0.4)"
                     />
                   </View>
                 </View>
@@ -269,7 +269,7 @@ export default function ProfileScreen({ navigation }: any) {
                   value={senderWallet}
                   onChangeText={setSenderWallet}
                   placeholder="Paste your wallet address"
-                  placeholderTextColor="rgba(255,255,255,0.3)"
+                  placeholderTextColor="rgba(0,0,0,0.4)"
                 />
                 <View style={styles.spacer} />
 
@@ -281,7 +281,7 @@ export default function ProfileScreen({ navigation }: any) {
                   onChangeText={setNewPassword}
                   secureTextEntry
                   placeholder="Type to change password"
-                  placeholderTextColor="rgba(255,255,255,0.3)"
+                  placeholderTextColor="rgba(0,0,0,0.4)"
                 />
 
                 <View style={styles.spacer} />
@@ -312,7 +312,7 @@ export default function ProfileScreen({ navigation }: any) {
                     style={styles.saveBtn}
                   >
                     {saving || loading ? (
-                      <ActivityIndicator color="#fff" size="small" />
+                      <ActivityIndicator color="#ffffff" size="small" />
                     ) : (
                       <Text style={styles.saveBtnText}>SAVE CHANGES</Text>
                     )}
@@ -359,7 +359,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     borderRadius: s(36),
-    backgroundColor: '#000',
+    backgroundColor: '#ffffff',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -370,13 +370,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   heroTitle: {
-    color: '#fff', // White title for readability
+    color: '#000000', // Black title for readability
     fontSize: ms(24),
     fontWeight: '800',
     letterSpacing: ms(0.5),
   },
   heroSubtitle: {
-    color: 'rgba(255,255,255,0.5)',
+    color: 'rgba(0,0,0,0.5)',
     fontSize: ms(13),
     marginTop: vs(4),
   },
@@ -388,11 +388,11 @@ const styles = StyleSheet.create({
   },
   statBox: {
     flex: 1,
-    backgroundColor: 'rgba(255,255,255,0.03)',
+    backgroundColor: 'rgba(0, 0, 0, 0.08)',
     borderRadius: ms(14),
     paddingVertical: vs(12),
     paddingHorizontal: s(14),
-    borderWidth: 1,
+    borderWidth: 0,
     borderColor: 'rgba(255, 0, 170, 0.1)', // Subtle Cyan Border
   },
   statLabel: {
@@ -403,7 +403,7 @@ const styles = StyleSheet.create({
     marginBottom: vs(4),
   },
   statValue: {
-    color: '#fff',
+    color: '#000000',
     fontSize: ms(15),
     fontWeight: '700',
   },
@@ -428,11 +428,11 @@ const styles = StyleSheet.create({
   },
   // 🎨 CHANGED: Input Border to Cyan Tint
   input: {
-    backgroundColor: '#000',
+    backgroundColor: '#ffffff',
     borderRadius: ms(12),
     paddingHorizontal: s(14),
     height: vs(48),
-    color: '#fff',
+    color: '#000000',
     fontSize: ms(14),
     borderWidth: 1,
     borderColor: 'rgba(255, 0, 170, 0.2)',
@@ -468,7 +468,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   saveBtnText: {
-    color: '#fff', // White text on Cyan/Magenta Button
+    color: '#ffffff', // White text on Cyan/Magenta Button
     fontSize: ms(15),
     fontWeight: '900',
     letterSpacing: ms(1),

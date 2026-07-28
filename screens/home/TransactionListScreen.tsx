@@ -160,10 +160,10 @@ export default function TransactionListScreen() {
           }
           style={{ marginBottom: vs(12) }}
         >
-          {/* Card Container simulating a dark metal plate */}
+          {/* Card Container */}
           <View style={styles.cardContainer}>
             <LinearGradient
-              colors={['#1a001a', '#000000']} // Dark Cyan Gradient
+              colors={['#ffffff', '#f9f9f9']} // Light Theme Gradient
               style={styles.cardGradient}
             >
               <View style={styles.cardContent}>
@@ -218,7 +218,7 @@ export default function TransactionListScreen() {
         >
           <View style={styles.cardContainer}>
             <LinearGradient
-              colors={['#1a001a', '#000000']} // Dark Magenta Gradient
+              colors={['#ffffff', '#f9f9f9']} // Light Theme Gradient
               style={styles.cardGradient}
             >
               <View style={styles.cardContent}>
@@ -274,7 +274,7 @@ export default function TransactionListScreen() {
         >
           <View style={styles.cardContainer}>
             <LinearGradient
-              colors={['#1a001a', '#000000']} // Dark Cyan Gradient
+              colors={['#ffffff', '#f9f9f9']} // Light Theme Gradient
               style={styles.cardGradient}
             >
               <View style={styles.cardContent}>
@@ -322,13 +322,13 @@ export default function TransactionListScreen() {
 
   return (
     <ScreenWrapper>
-      {/* 🌑 Background: Dark Cyan/Magenta */}
+      {/* 🌑 Background: Light Theme Gradient */}
       <LinearGradient
-        colors={['#000000', '#0a000e', '#170020']}
+        colors={['#ffffff', '#f5f5f5', '#ebebeb']}
         style={styles.background}
       >
         <SafeAreaView style={styles.safeArea}>
-          <StatusBar barStyle="light-content" backgroundColor="#000" />
+          <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
           <View style={styles.container}>
             {/* Header */}
             <View style={styles.headerContainer}>
@@ -359,7 +359,7 @@ export default function TransactionListScreen() {
                     onRefresh={onRefresh}
                     tintColor="#ff00aa"
                     colors={['#ff00aa', '#9000ff']}
-                    progressBackgroundColor="#1c140d"
+                    progressBackgroundColor="#ffffff"
                   />
                 }
                 ListEmptyComponent={
@@ -466,7 +466,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     position: 'relative',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: 'rgba(0,0,0,0.1)',
   },
   feedImage: {
     width: '100%',
@@ -512,7 +512,7 @@ const styles = StyleSheet.create({
   },
   dateText: {
     fontSize: ms(10),
-    color: 'rgba(255, 230, 249, 0.4)',
+    color: 'rgba(0, 0, 0, 0.4)',
     fontWeight: '500',
   },
 

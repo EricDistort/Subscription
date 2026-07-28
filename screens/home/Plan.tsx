@@ -219,7 +219,7 @@ export default function PersonalizedSimulatorScreen() {
     return (
       <ScreenWrapper>
         <LinearGradient
-          colors={['#000000', '#0a000e', '#170020']}
+          colors={['#ffffff', '#fafafa', '#f0f0f0']}
           style={[
             styles.background,
             { justifyContent: 'center', alignItems: 'center' },
@@ -244,9 +244,9 @@ export default function PersonalizedSimulatorScreen() {
   return (
     <ScreenWrapper>
       <SafeAreaView style={styles.safeArea}>
-        <StatusBar barStyle="light-content" backgroundColor="#000" />
+        <StatusBar barStyle="dark-content" backgroundColor="#fff" />
         <LinearGradient
-          colors={['#000000', '#0a000e', '#170020']}
+          colors={['#ffffff', '#fafafa', '#f0f0f0']}
           style={styles.background}
         >
           <ScrollView
@@ -255,8 +255,7 @@ export default function PersonalizedSimulatorScreen() {
           >
             {/* --- HEADER --- */}
             <View style={styles.header}>
-              
-              <Text style={styles.titleFilled}>PROJECTION</Text>
+              <Text style={styles.titleFilled}>Roadmap</Text>
               <Text style={styles.subtitle}>
                 Base Vault: ${BASE_INV} | Plan your path to 3%
               </Text>
@@ -352,30 +351,30 @@ export default function PersonalizedSimulatorScreen() {
                       styles.actionBox,
                       {
                         marginTop: vs(12),
-                        borderColor: 'rgba(0, 229, 255, 0.3)',
+                        borderColor: 'rgba(0, 150, 200, 0.3)',
                       },
                     ]}
                   >
                     <View style={styles.boxLeftText}>
-                      <Text style={[styles.controlLabel, { color: '#00e5ff' }]}>
+                      <Text style={[styles.controlLabel, { color: '#0088cc' }]}>
                         FUTURE DAYS HELD
                       </Text>
-                      <Text style={styles.bonusText}>
+                      <Text style={[styles.bonusText, { color: '#333' }]}>
                         Est. ROI:{' '}
-                        <Text style={{ color: '#00e5ff' }}>
+                        <Text style={{ color: '#0088cc' }}>
                           $
                           {(
                             currentWalletBalance -
                             userHoldings -
                             addedRefBonus
-                          ).toFixed(2)}
+                        ).toFixed(2)}
                         </Text>
                       </Text>
                     </View>
                     <View
                       style={[
                         styles.counter,
-                        { borderColor: 'rgba(0, 229, 255, 0.3)' },
+                        { borderColor: 'rgba(0, 150, 200, 0.3)' },
                       ]}
                     >
                       <PopScaleButton
@@ -383,12 +382,12 @@ export default function PersonalizedSimulatorScreen() {
                         style={styles.counterBtn}
                       >
                         <Text
-                          style={[styles.counterBtnText, { color: '#00e5ff' }]}
+                          style={[styles.counterBtnText, { color: '#0088cc' }]}
                         >
                           -
                         </Text>
                       </PopScaleButton>
-                      <Text style={styles.counterValue}>{daysElapsed}</Text>
+                      <Text style={[styles.counterValue, { color: '#333' }]}>{daysElapsed}</Text>
                       <PopScaleButton
                         onPress={() =>
                           setDaysElapsed(d => Math.min(365, d + 1))
@@ -396,7 +395,7 @@ export default function PersonalizedSimulatorScreen() {
                         style={styles.counterBtn}
                       >
                         <Text
-                          style={[styles.counterBtnText, { color: '#00e5ff' }]}
+                          style={[styles.counterBtnText, { color: '#0088cc' }]}
                         >
                           +
                         </Text>
@@ -412,7 +411,7 @@ export default function PersonalizedSimulatorScreen() {
                   colors={[
                     'rgba(255, 0, 170, 0)',
                     'rgba(0, 0, 0, 0)',
-                    'rgba(0, 229, 255, 0)',
+                    'rgba(0, 150, 200, 0)',
                   ]}
                   style={styles.holdingBalanceGradient}
                   start={{ x: 0, y: 0 }}
@@ -420,7 +419,7 @@ export default function PersonalizedSimulatorScreen() {
                 >
                   <Text style={styles.holdingBalanceAmount}>
                     $
-                    <Text style={{ color: '#fff', alignSelf: 'center' }}>
+                    <Text style={{ color: '#000', alignSelf: 'center' }}>
                       {currentWalletBalance.toLocaleString(undefined, {
                         minimumFractionDigits: 0,
                         maximumFractionDigits: 2,
@@ -455,7 +454,7 @@ export default function PersonalizedSimulatorScreen() {
                 </View>
                 <Text style={styles.statusText}>
                   Status:{' '}
-                  <Text style={{ color: '#00ffaa' }}>
+                  <Text style={{ color: '#00aa66' }}>
                     ACTIVE (${(BASE_INV * 0.01).toFixed(2)} Daily)
                   </Text>
                 </Text>
@@ -509,7 +508,7 @@ export default function PersonalizedSimulatorScreen() {
                   <Text
                     style={[
                       styles.phaseTitle,
-                      currentPhase === 3 && { color: '#00e5ff' },
+                      currentPhase === 3 && { color: '#0088cc' },
                     ]}
                   >
                     PHASE 3
@@ -529,7 +528,7 @@ export default function PersonalizedSimulatorScreen() {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#000' },
+  safeArea: { flex: 1, backgroundColor: '#fff' },
   background: { flex: 1 },
   scrollContent: {
     paddingHorizontal: s(10),
@@ -542,16 +541,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: vs(25),
   },
-  titleOutline: {
-    fontSize: ms(36),
-    fontWeight: '300',
-    color: 'transparent',
-    textShadowColor: 'rgba(255, 0, 170, 0.4)',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 1,
-    letterSpacing: 4,
-    marginBottom: -8,
-  },
   titleFilled: {
     fontSize: ms(36),
     fontWeight: '900',
@@ -560,15 +549,14 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: ms(12),
-    color: 'rgba(255, 255, 255, 0.6)',
+    color: 'rgba(0, 0, 0, 0.6)',
     marginTop: vs(3),
     fontWeight: '700',
-    //textTransform: 'uppercase',
   },
 
   /* CONTROLS */
   controlsContainer: {
-    backgroundColor: 'rgba(255,255,255,0.03)',
+    backgroundColor: 'rgba(0,0,0,0.03)',
     borderRadius: ms(20),
     padding: s(15),
     borderWidth: 1,
@@ -582,19 +570,18 @@ const styles = StyleSheet.create({
     marginBottom: vs(5),
   },
   controlLabel: {
-    color: 'rgba(255,255,255,0.5)',
+    color: 'rgba(0,0,0,0.6)',
     fontSize: ms(12),
     fontWeight: '900',
     letterSpacing: 1,
   },
   strategyDesc: {
-    color: '#aaa',
+    color: '#666',
     fontSize: ms(11),
-    //fontStyle: 'italic',
   },
   toggleContainer: {
     flexDirection: 'row',
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: 'rgba(0,0,0,0.06)',
     borderRadius: ms(20),
     padding: s(4),
     marginBottom: vs(10),
@@ -606,17 +593,17 @@ const styles = StyleSheet.create({
     borderRadius: ms(20),
   },
   toggleBtnActive: {
-    backgroundColor: '#f700ff',
+    backgroundColor: '#ff00aa',
     borderWidth: 1,
     borderColor: '#ff00aa',
   },
   toggleText: {
-    color: 'rgba(255,255,255,0.3)',
+    color: 'rgba(0,0,0,0.4)',
     fontSize: ms(12),
     fontWeight: '900',
   },
   toggleTextActive: {
-    color: '#000000',
+    color: '#ffffff',
   },
 
   countersWrapper: {
@@ -626,16 +613,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: 'rgba(0,0,0,0.04)',
     paddingHorizontal: s(16),
     paddingVertical: vs(10),
     borderRadius: ms(25),
-    //borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.05)',
+    borderColor: 'rgba(0,0,0,0.05)',
   },
   boxLeftText: { flex: 1 },
   bonusText: {
-    color: '#fff',
+    color: '#333',
     fontSize: ms(13),
     fontWeight: 'bold',
     marginTop: vs(4),
@@ -643,7 +629,7 @@ const styles = StyleSheet.create({
   counter: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#0a0a0a',
+    backgroundColor: '#fff',
     borderRadius: ms(20),
     borderWidth: 1,
     borderColor: 'rgba(255, 0, 170, 0.2)',
@@ -658,7 +644,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   counterValue: {
-    color: '#fff',
+    color: '#000',
     fontSize: ms(18),
     fontWeight: '900',
     minWidth: s(30),
@@ -668,8 +654,6 @@ const styles = StyleSheet.create({
   /* Horizontal Holding Balance Display */
   holdingBalanceContainer: {
     borderRadius: ms(15),
-    //overflow: 'hidden',
-    //borderWidth: 1,
   },
   holdingBalanceGradient: {
     flexDirection: 'row',
@@ -678,17 +662,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: s(20),
     paddingVertical: vs(5),
   },
-  holdingBalanceLabel: {
-    color: 'rgba(255,255,255,0.8)',
-    fontSize: ms(12),
-    fontWeight: '900',
-    letterSpacing: 1,
-  },
   holdingBalanceAmount: {
     fontSize: ms(28),
     fontWeight: '900',
-    color: '#00e5ff',
-    textShadowColor: 'rgba(0, 229, 255, 0.5)',
+    color: '#0088cc',
+    textShadowColor: 'rgba(0, 150, 200, 0.2)',
     textShadowOffset: { width: 0, height: 0 },
     textShadowRadius: 8,
   },
@@ -699,34 +677,34 @@ const styles = StyleSheet.create({
   },
   phaseCard: {
     width: '100%',
-    backgroundColor: 'rgba(20,20,20,0.8)',
+    backgroundColor: 'rgba(240,240,240,0.8)',
     borderRadius: ms(16),
     paddingHorizontal: s(20),
     paddingVertical: vs(8),
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.05)',
+    borderColor: 'rgba(0,0,0,0.05)',
   },
   phaseActiveCardP1: {
     borderColor: '#ff00aa',
     backgroundColor: 'rgba(255, 0, 170, 0.05)',
     shadowColor: '#ff00aa',
-    shadowOpacity: 0.2,
-    shadowRadius: 10,
+    shadowOpacity: 0.3,
+    shadowRadius: 15,
     elevation: 600,
   },
   phaseActiveCardP2: {
     borderColor: '#9000ff',
     backgroundColor: 'rgba(144, 0, 255, 0.05)',
     shadowColor: '#9000ff',
-    shadowOpacity: 0.2,
-    shadowRadius: 10,
+      shadowOpacity: 0.3,
+    shadowRadius: 15,
     elevation: 600,
   },
   phaseActiveCardP3: {
-    borderColor: '#00e5ff',
-    backgroundColor: 'rgba(0, 229, 255, 0.05)',
-    shadowColor: '#00e5ff',
-    shadowOpacity: 0.3,
+    borderColor: '#0088cc',
+    backgroundColor: 'rgba(0, 150, 200, 0.05)',
+    shadowColor: '#0088cc',
+      shadowOpacity: 0.3,
     shadowRadius: 15,
     elevation: 600,
   },
@@ -737,28 +715,29 @@ const styles = StyleSheet.create({
     marginBottom: vs(2),
   },
   phaseTitle: {
-    color: 'rgba(255,255,255,0.3)',
+    color: 'rgba(0,0,0,0.3)',
     fontSize: ms(16),
     fontWeight: '900',
     letterSpacing: 2,
   },
   rateText: {
-    color: '#fff',
+    color: '#000',
     fontSize: ms(22),
     fontWeight: 'bold',
   },
   rateSub: {
     fontSize: ms(12),
-    color: 'rgba(255,255,255,0.5)',
+    color: 'rgba(0,0,0,0.5)',
   },
   statusText: {
     fontSize: ms(13),
     fontWeight: '700',
-    color: 'rgba(255,255,255,0.5)',
+  
+    color: 'rgba(0,0,0,0.5)',
   },
   connector: {
     width: 2,
     height: vs(20),
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: 'rgba(0,0,0,0.1)',
   },
 });

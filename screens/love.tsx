@@ -141,8 +141,8 @@ export default function PlanSimulatorScreen() {
             {/* --- HEADER --- */}
             <View style={styles.header}>
               
-              <Text style={styles.titleFilled}>SIMULATOR</Text>
-              <Text style={styles.subtitle}>Base Vault: $100 | Discover your fastest path to 3%</Text>
+              <Text style={styles.titleFilled}>Roadmap</Text>
+              <Text style={styles.subtitle}>Investment $100 | Fastest path to 3% Daily</Text>
             </View>
 
             {/* --- CONTROLS --- */}

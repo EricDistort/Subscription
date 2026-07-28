@@ -12,6 +12,7 @@ import {
   StyleSheet,
   Animated,
   Pressable,
+  Dimensions,
 } from 'react-native';
 import {
   scale as s,
@@ -43,6 +44,12 @@ import IndirectReferralsScreen from './screens/home/IndirectReferralsScreen';
 import WebinarScreen from './screens/Feed/WebinarScreen';
 import Love from './screens/love';
 import Plan from './screens/home/Plan';
+import FeedDetailScreen from './screens/Feed/FeedDetailScreen';
+import SubscriptionScreen from './screens/home/SubscriptionScreen';
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const COLLAPSED_SIZE = vs(65);
+const EXPANDED_HEIGHT = COLLAPSED_SIZE * 3;
 
 const RootStack = createNativeStackNavigator();
 const HomeStack = createNativeStackNavigator();
@@ -50,7 +57,7 @@ const StoreStack = createNativeStackNavigator();
 const FeedStack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-// 🎨 CHANGED: Cyan/Magenta Theme Gradient
+// 🎨 Cyan/Magenta Theme Gradient
 const THEME_GRADIENT = ['#ff00aa', '#9000ff'];
 
 // 1️⃣ UPDATED THEME FOR CYAN ACCENTS
@@ -61,8 +68,8 @@ const MyDarkTheme = {
     background: '#000000',
     card: '#000000',
     text: '#ffffff',
-    border: '#1a0011', // Dark Cyan border
-    notification: '#ff00aa', // Cyan notifications
+    border: '#1a0011',
+    notification: '#ff00aa',
   },
 };
 
@@ -119,14 +126,142 @@ const PopTabButton = (props: any) => {
   );
 };
 
+// --- EXPANDABLE CUSTOM TAB BAR ---
+function CustomTabBar({ state, descriptors, navigation }: any) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const expandAnim = useRef(new Animated.Value(0)).current;
+
+  const toggleMenu = () => {
+    const nextState = !isExpanded;
+    setIsExpanded(nextState);
+    Animated.spring(expandAnim, {
+      toValue: nextState ? 1 : 0,
+      friction: 7,
+      tension: 50,
+      useNativeDriver: false,
+    }).start();
+  };
+
+  const handlePress = (route: any, index: number, isFocused: boolean) => {
+    if (!isExpanded) {
+      toggleMenu();
+      return;
+    }
+
+    if (isFocused) {
+      toggleMenu();
+      return;
+    }
+
+    const event = navigation.emit({
+      type: 'tabPress',
+      target: route.key,
+      canPreventDefault: true,
+    });
+
+    if (!isFocused && !event.defaultPrevented) {
+      navigation.navigate({ name: route.name, merge: true });
+    }
+    toggleMenu();
+  };
+
+  const animatedHeight = expandAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [COLLAPSED_SIZE, EXPANDED_HEIGHT],
+  });
+
+  const rowOpacity = expandAnim.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: [0, 0, 1],
+  });
+
+  const collapsedOpacity = expandAnim.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: [1, 0, 0],
+  });
+
+  const activeRoute = state.routes[state.index];
+  const activeDescriptor = descriptors[activeRoute.key];
+  const ActiveIcon = activeDescriptor.options.tabBarIcon;
+
+  return (
+    <Animated.View
+      style={[styles.tabBar, { height: animatedHeight, width: COLLAPSED_SIZE }]}
+    >
+      <LinearGradient
+        colors={THEME_GRADIENT}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+        style={styles.gradientBackground}
+      />
+
+      {/* Expanded Column (All Tabs) */}
+      <Animated.View
+        style={[
+          {
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            flexDirection: 'column',
+            height: EXPANDED_HEIGHT,
+            width: COLLAPSED_SIZE,
+            opacity: rowOpacity,
+          },
+        ]}
+        pointerEvents={isExpanded ? 'auto' : 'none'}
+      >
+        {state.routes.map((route: any, index: number) => {
+          const { options } = descriptors[route.key];
+          const isFocused = state.index === index;
+          return (
+            <PopTabButton
+              key={route.key}
+              onPress={() => handlePress(route, index, isFocused)}
+              style={styles.tabBtnContainer}
+            >
+              {options.tabBarIcon
+                ? options.tabBarIcon({ focused: isFocused })
+                : null}
+            </PopTabButton>
+          );
+        })}
+      </Animated.View>
+
+      {/* Collapsed View (Only Active Tab) */}
+      <Animated.View
+        style={[
+          {
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            height: COLLAPSED_SIZE,
+            width: COLLAPSED_SIZE,
+            opacity: collapsedOpacity,
+          },
+        ]}
+        pointerEvents={isExpanded ? 'none' : 'auto'}
+      >
+        <PopTabButton onPress={toggleMenu} style={styles.tabBtnContainer}>
+          {ActiveIcon ? ActiveIcon({ focused: true }) : null}
+        </PopTabButton>
+      </Animated.View>
+    </Animated.View>
+  );
+}
+
 function HomeStackScreen() {
   return (
     <HomeStack.Navigator screenOptions={globalScreenOptions}>
       <HomeStack.Screen name="HomeMain" component={HomeScreen} />
       <HomeStack.Screen name="SendMoney" component={SendMoneyScreen} />
       <HomeStack.Screen name="RecieveMoney" component={FeedScreen} />
+      <HomeStack.Screen name="FeedDetailScreen" component={FeedDetailScreen} />
       <HomeStack.Screen name="WebinarScreen" component={WebinarScreen} />
       <HomeStack.Screen name="OrderList" component={OrderListScreen} />
+      <HomeStack.Screen
+        name="SubscriptionScreen"
+        component={SubscriptionScreen}
+      />
       <HomeStack.Screen
         name="RecieveMoneyScreen"
         component={RecieveMoneyScreen}
@@ -182,25 +317,13 @@ function MainTabs() {
       <Tab.Navigator
         initialRouteName="Home"
         sceneContainerStyle={{ backgroundColor: '#000000' }}
-        screenOptions={{
-          headerShown: false,
-          tabBarShowLabel: false,
-          tabBarStyle: styles.tabBar,
-          tabBarBackground: () => (
-            <LinearGradient
-              colors={THEME_GRADIENT}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 0, y: 1 }}
-              style={styles.gradientBackground}
-            />
-          ),
-        }}
+        tabBar={props => <CustomTabBar {...props} />}
+        screenOptions={{ headerShown: false }}
       >
         <Tab.Screen
           name="Trades"
           component={StoreStackScreen}
           options={{
-            tabBarButton: props => <PopTabButton {...props} />,
             tabBarIcon: ({ focused }) => (
               <View style={styles.iconContainer}>
                 <Image
@@ -220,7 +343,6 @@ function MainTabs() {
           name="Home"
           component={HomeStackScreen}
           options={{
-            tabBarButton: props => <PopTabButton {...props} />,
             tabBarIcon: ({ focused }) => (
               <View style={styles.iconContainer}>
                 <Image
@@ -240,7 +362,6 @@ function MainTabs() {
           name="Receipt"
           component={FeedStackScreen}
           options={{
-            tabBarButton: props => <PopTabButton {...props} />,
             tabBarIcon: ({ focused }) => (
               <View style={styles.iconContainer}>
                 <Image
@@ -278,14 +399,13 @@ export default function App() {
   return (
     <UserProvider>
       <StatusBar backgroundColor="#000000" barStyle="light-content" />
-      <View style={{ flex: 1, backgroundColor: '#000000' }}>
+      <View style={{ flex: 1, backgroundColor: '#ffffff' }}>
         <NavigationContainer theme={MyDarkTheme}>
           <RootStack.Navigator
             initialRouteName="Onboarding"
             screenOptions={globalScreenOptions}
           >
             <RootStack.Screen name="Onboarding" component={OnboardingScreen} />
-
             <RootStack.Screen name="Login" component={LoginScreen} />
             <RootStack.Screen name="Register" component={Register} />
             <RootStack.Screen name="Main" component={MainTabs} />
@@ -302,29 +422,22 @@ export default function App() {
 const styles = StyleSheet.create({
   tabContainer: {
     flex: 1,
-    backgroundColor: '#000000',
+    backgroundColor: '#ffffff',
   },
   tabBar: {
     position: 'absolute',
-    bottom: vs(20),
-    left: 0,
-    right: 0,
+    bottom: vs(30),
+    left: s(30),
     height: vs(65),
-    borderRadius: ms(35),
-    backgroundColor: 'transparent',
-    borderTopWidth: 0,
-    elevation: 0,
-    marginHorizontal: s(30),
-    paddingHorizontal: s(15),
-    paddingTop: vs(10),
+    borderRadius: ms(100),
+    overflow: 'hidden',
+    elevation: 10,
+    shadowColor: '#000000',
+    shadowOpacity: 0.9,
+    shadowRadius: ms(10),
   },
   gradientBackground: {
-    flex: 1,
-    borderRadius: ms(35),
-    elevation: 10,
-    shadowColor: '#ff00aa',
-    shadowOpacity: 0.3,
-    shadowRadius: ms(8),
+    ...StyleSheet.absoluteFillObject,
   },
   tabBtnContainer: {
     flex: 1,
@@ -345,15 +458,15 @@ const styles = StyleSheet.create({
   activeIcon: {
     width: s(32),
     height: s(32),
-    tintColor: '#ffffff', // White icon on Cyan/Magenta background
+    tintColor: '#ffffff',
   },
   inactiveIcon: {
-    tintColor: 'rgba(255, 255, 255, 0.4)', // Semi-transparent white icons for inactive
+    tintColor: 'rgba(255, 255, 255, 0.4)',
   },
   activeDot: {
     width: s(15),
     height: s(4),
     borderRadius: s(2.5),
-    backgroundColor: '#ffffff', // White dot
+    backgroundColor: '#ffffff',
   },
 });

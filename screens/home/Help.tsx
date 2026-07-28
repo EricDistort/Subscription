@@ -283,19 +283,14 @@ export default function SupportScreen() {
   return (
     <ScreenWrapper>
       <LinearGradient
-        colors={['#000000', '#0a000e', '#170020']}
+        colors={['#ffffff', '#fafafa', '#f0f0f0']}
         style={styles.container}
       >
-        <StatusBar barStyle="light-content" backgroundColor="#000" />
+        <StatusBar barStyle="dark-content" backgroundColor="#fff" />
 
         {/* --- HEADER --- */}
         <View style={styles.headerContainer}>
-          <LinearGradient
-            colors={THEME_GRADIENT}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-            style={styles.headerLine}
-          />
+         
           <View style={styles.headerContent}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Text style={styles.headerTitle}>LIVE SUPPORT</Text>
@@ -355,7 +350,7 @@ export default function SupportScreen() {
                 value={input}
                 onChangeText={setInput}
                 placeholder="Transmitting message..."
-                placeholderTextColor="rgba(255,255,255,0.3)"
+                placeholderTextColor="rgba(0,0,0,0.4)"
                 returnKeyType="send"
                 onSubmitEditing={sendMessage}
                 multiline={false}
@@ -405,7 +400,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: ms(20),
     fontWeight: '900',
-    color: '#ff00aa',
+    color: '#030303b2',
     letterSpacing: ms(1),
     textTransform: 'uppercase',
   },
@@ -430,31 +425,31 @@ const styles = StyleSheet.create({
     maxWidth: '80%',
   },
   userBubble: {
-    backgroundColor: '#330022',
+    backgroundColor: 'rgba(255, 0, 170, 0.1)',
     alignSelf: 'flex-end',
     borderBottomRightRadius: ms(2),
     borderWidth: 1,
     borderColor: '#ff00aa',
   },
   adminBubble: {
-    backgroundColor: '#1a1a1a',
+    backgroundColor: '#f9f9f9',
     alignSelf: 'flex-start',
     borderBottomLeftRadius: ms(2),
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: 'rgba(0,0,0,0.1)',
   },
-  messageText: { fontSize: ms(14), color: '#fff', lineHeight: ms(20) },
-  adminText: { color: '#ccc' },
+  messageText: { fontSize: ms(14), color: '#000', lineHeight: ms(20) },
+  adminText: { color: 'rgba(0, 0, 0, 0.6)' },
   inputWrapper: { padding: s(15), backgroundColor: 'rgba(0, 0, 0, 0)' },
   inputRow: { flexDirection: 'row', alignItems: 'center' },
   input: {
     flex: 1,
-    backgroundColor: '#121212',
+    backgroundColor: '#fff',
     borderRadius: ms(25),
     paddingHorizontal: s(15),
     paddingVertical: vs(12),
     marginRight: s(10),
-    color: '#fff',
+    color: '#000',
     borderWidth: 1,
     borderColor: 'rgba(255, 0, 170, 0.2)',
     fontSize: ms(14),

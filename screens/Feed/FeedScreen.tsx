@@ -1,3 +1,4 @@
+// --- FeedScreen.tsx ---
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   View,
@@ -23,6 +24,7 @@ import {
 } from 'react-native-size-matters';
 import Video from 'react-native-video';
 import LinearGradient from 'react-native-linear-gradient';
+import { WebView } from 'react-native-webview';
 
 const { width } = Dimensions.get('window');
 
@@ -57,7 +59,7 @@ const PopButton = ({ onPress, children, style }: any) => {
   );
 };
 
-const PopCard = ({ children, style }: any) => {
+const PopCard = ({ children, style, onPress }: any) => {
   const scaleValue = useRef(new Animated.Value(1)).current;
   const handlePressIn = () => {
     Animated.spring(scaleValue, {
@@ -77,6 +79,7 @@ const PopCard = ({ children, style }: any) => {
     <Pressable
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
+      onPress={onPress}
       style={style}
     >
       <Animated.View style={{ transform: [{ scale: scaleValue }] }}>
@@ -121,6 +124,11 @@ export default function FeedScreen() {
       item.banner_url &&
       (item.banner_url.endsWith('.mp4') || item.banner_url.includes('video'));
 
+    const isCanva =
+      item.banner_url &&
+      (item.banner_url.includes('canva.com') ||
+        item.banner_url.includes('canva.link'));
+
     const formattedDate = new Date(item.created_at).toLocaleDateString(
       undefined,
       {
@@ -130,12 +138,24 @@ export default function FeedScreen() {
     );
 
     return (
-      <PopCard style={styles.cardContainer}>
-        {/* 🎨 Shadow color adjusted to Cyan */}
+      <PopCard
+        style={styles.cardContainer}
+        onPress={() => navigation.navigate('FeedDetailScreen', { feed: item })}
+      >
         <View style={styles.cardShadow} />
         <View style={styles.card}>
           <View style={styles.mediaContainer}>
-            {isVideo ? (
+            {isCanva ? (
+              <View pointerEvents="none" style={styles.media}>
+                <WebView
+                  source={{ uri: item.banner_url }}
+                  style={{ width: '100%', height: '100%' }}
+                  scrollEnabled={false}
+                  showsVerticalScrollIndicator={false}
+                  showsHorizontalScrollIndicator={false}
+                />
+              </View>
+            ) : isVideo ? (
               <Video
                 source={{ uri: item.banner_url }}
                 style={styles.media}
@@ -151,12 +171,16 @@ export default function FeedScreen() {
                 resizeMode="cover"
               />
             )}
-            <LinearGradient
-              colors={['transparent', 'rgba(0,0,0,0.8)', '#000']}
-              start={{ x: 0, y: 0.4 }}
-              end={{ x: 0, y: 1 }}
-              style={styles.gradientOverlay}
-            />
+
+            {!isCanva && (
+              <LinearGradient
+                colors={['transparent', 'rgba(255,255,255,0.8)', '#ffffff']}
+                start={{ x: 0, y: 0.4 }}
+                end={{ x: 0, y: 1 }}
+                style={styles.gradientOverlay}
+              />
+            )}
+
             <View style={styles.dateBadge}>
               <Text style={styles.dateText}>{formattedDate}</Text>
             </View>
@@ -167,14 +191,13 @@ export default function FeedScreen() {
             </View>
           </View>
           <View style={styles.contentContainer}>
-            {/* 🎨 Accent line updated to Cyan/Magenta Gradient */}
             <LinearGradient
               colors={THEME_GRADIENT}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               style={styles.accentLine}
             />
-            <Text style={styles.body} numberOfLines={4}>
+            <Text style={styles.body} numberOfLines={3}>
               {item.body}
             </Text>
           </View>
@@ -185,15 +208,13 @@ export default function FeedScreen() {
 
   return (
     <ScreenWrapper>
-      <StatusBar barStyle="light-content" backgroundColor="#000" />
-      {/* 🌑 Background: Dark Cyan/Magenta Gradient */}
+      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
       <LinearGradient
-        colors={['#000000', '#0a000e', '#170020']}
+        colors={['#ffffff', '#f5f5f5', '#ebebeb']}
         style={{ flex: 1 }}
       >
         <SafeAreaView style={styles.safeArea}>
           <View style={styles.container}>
-            {/* Header */}
             <View style={styles.header}>
               <Text style={styles.mainTitle}>Trending News</Text>
             </View>
@@ -214,7 +235,7 @@ export default function FeedScreen() {
                     onRefresh={onRefresh}
                     tintColor="#ff00aa"
                     colors={['#ff00aa', '#9000ff']}
-                    progressBackgroundColor="#1a1a1a"
+                    progressBackgroundColor="#ffffff"
                   />
                 }
                 contentContainerStyle={styles.listContent}
@@ -238,8 +259,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-
-  /* Header */
   header: {
     marginTop: vs(30),
     marginBottom: vs(15),
@@ -250,10 +269,9 @@ const styles = StyleSheet.create({
   mainTitle: {
     fontSize: ms(28),
     fontWeight: '800',
-    color: '#ff00aa', // Cyan
+    color: '#030303b2',
     letterSpacing: ms(-1),
   },
-  /* Webinar Button Styles */
   webinarButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -267,12 +285,10 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   webinarText: {
-    color: '#ff00aa', // Cyan text
+    color: '#ff00aa',
     fontWeight: '800',
     fontSize: ms(12),
   },
-
-  /* Card Layout */
   listContent: {
     paddingBottom: vs(50),
   },
@@ -286,21 +302,19 @@ const styles = StyleSheet.create({
     left: s(15),
     right: s(15),
     bottom: -vs(5),
-    backgroundColor: '#ff00aa', // Updated shadow to Cyan
+    backgroundColor: '#ff00aa',
     borderRadius: ms(24),
     opacity: 0.15,
     transform: [{ scale: 0.95 }],
   },
   card: {
-    backgroundColor: '#0a0a0a',
+    backgroundColor: '#ffffff',
     borderRadius: ms(24),
     overflow: 'hidden',
     elevation: 10,
     borderWidth: 1,
     borderColor: 'rgba(255, 0, 170, 0.1)',
   },
-
-  /* Media Section */
   mediaContainer: {
     width: '100%',
     height: vs(240),
@@ -317,26 +331,22 @@ const styles = StyleSheet.create({
     bottom: 0,
     height: '60%',
   },
-
-  /* Date Badge */
   dateBadge: {
     position: 'absolute',
     top: s(15),
     right: s(15),
-    backgroundColor: 'rgba(0,0,0,0.7)',
+    backgroundColor: 'rgba(255,255,255,0.7)',
     paddingVertical: vs(6),
     paddingHorizontal: s(12),
     borderRadius: ms(20),
     borderWidth: 1,
-    borderColor: 'rgba(255, 0, 170, 0.3)', // Cyan Border
+    borderColor: 'rgba(255, 0, 170, 0.3)',
   },
   dateText: {
-    color: '#ff00aa', // Cyan Text
+    color: '#ff00aa',
     fontSize: ms(12),
     fontWeight: '700',
   },
-
-  /* Title Overlay */
   titleOverlay: {
     position: 'absolute',
     bottom: 0,
@@ -344,22 +354,21 @@ const styles = StyleSheet.create({
     right: 0,
     paddingHorizontal: s(20),
     paddingBottom: vs(10),
+    backgroundColor: 'rgba(255, 255, 255, 0.5)',
   },
   title: {
     fontSize: ms(22),
     fontWeight: '800',
-    color: '#ff00aa', // Cyan Text
+    color: '#000000',
     lineHeight: ms(28),
-    textShadowColor: 'rgba(0,0,0,0.75)',
+    textShadowColor: 'rgba(255,255,255,0.75)',
     textShadowOffset: { width: 0, height: vs(2) },
     textShadowRadius: ms(4),
   },
-
-  /* Content Body */
   contentContainer: {
     padding: s(20),
     paddingTop: vs(10),
-    backgroundColor: '#0a0a0a',
+    backgroundColor: '#ffffff',
   },
   accentLine: {
     width: s(40),
@@ -369,7 +378,7 @@ const styles = StyleSheet.create({
   },
   body: {
     fontSize: ms(14),
-    color: 'rgba(255, 255, 255, 0.4)',
+    color: 'rgba(0, 0, 0, 0.6)',
     lineHeight: ms(22),
     fontWeight: '400',
   },

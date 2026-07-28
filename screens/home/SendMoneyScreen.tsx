@@ -21,7 +21,7 @@ import {
   verticalScale as vs,
   moderateScale as ms,
 } from 'react-native-size-matters';
-import { useNavigation } from '@react-navigation/native'; // <-- Added Navigation
+import { useNavigation } from '@react-navigation/native';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -178,7 +178,7 @@ const PopButton = ({ onPress, children, style }: any) => {
 
 export default function FoundryMiningScreen() {
   const { user, setUser } = useUser();
-  const navigation = useNavigation<any>(); // <-- Init Navigation
+  const navigation = useNavigation<any>();
   const [investments, setInvestments] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -207,7 +207,7 @@ export default function FoundryMiningScreen() {
         ...t,
         currentValue: t.amount,
         progress: Math.random() * 100,
-        temp: Math.floor(Math.random() * (2000 - 1500) + 1500),
+        temp: Math.floor(Math.random() * (100 - 50) + 50),
       }));
       setInvestments(initialized);
     }
@@ -237,9 +237,9 @@ export default function FoundryMiningScreen() {
 
   return (
     <ScreenWrapper>
-      <StatusBar barStyle="light-content" backgroundColor="#000" />
+      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
       <LinearGradient
-        colors={['#000000', '#0a000e', '#170020']} // Deep Cyan/Magenta/Black
+        colors={['#ffffff', '#f5f5f5', '#ebebeb']} // Light Theme Gradient
         style={styles.background}
       >
         <SafeAreaView style={styles.safeArea}>
@@ -256,7 +256,9 @@ export default function FoundryMiningScreen() {
             {/* Card 1: Profit */}
             <View style={styles.glassCard}>
               <LinearGradient
-                colors={['rgba(255,255,255,0.08)', 'rgba(0,0,0,0.5)']}
+                colors={['#ff00aa', '#9000ff']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
                 style={styles.cardGradient}
               >
                 <Text style={styles.statLabel}>Balance</Text>
@@ -271,7 +273,9 @@ export default function FoundryMiningScreen() {
             {/* Card 2: Level Income */}
             <View style={styles.glassCard}>
               <LinearGradient
-                colors={['rgba(255,255,255,0.08)', 'rgba(0,0,0,0.5)']}
+                colors={['#ff00aa', '#9000ff']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
                 style={styles.cardGradient}
               >
                 <Text style={styles.statLabel}>Network</Text>
@@ -294,10 +298,17 @@ export default function FoundryMiningScreen() {
               </View>
 
               {/* 👇 NEW HISTORY BUTTON 👇 */}
-              <PopButton onPress={() => navigation.navigate('TransactionListScreen')}>
-                <View style={styles.historyBtn}>
+              <PopButton
+                onPress={() => navigation.navigate('TransactionListScreen')}
+              >
+                <LinearGradient
+                  colors={['#ff00aa', '#9000ff']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={styles.historyBtn}
+                >
                   <Text style={styles.historyBtnText}>HISTORY</Text>
-                </View>
+                </LinearGradient>
               </PopButton>
             </View>
 
@@ -320,7 +331,7 @@ export default function FoundryMiningScreen() {
                   <View key={item.id} style={styles.rigCard}>
                     {/* Background Glow */}
                     <LinearGradient
-                      colors={['#1a0011', '#000000']}
+                      colors={['#ffffff', '#f9f9f9']}
                       style={styles.rigInner}
                     >
                       {/* Header */}
@@ -331,7 +342,7 @@ export default function FoundryMiningScreen() {
                         <View style={{ flex: 1, paddingLeft: s(10) }}>
                           <Text style={styles.rigName}>Shreded Diposit</Text>
                           <Text style={styles.rigTemp}>
-                            {item.temp}°F • Molten
+                            {item.temp}°F • Server Temperature
                           </Text>
                         </View>
                         <Text style={styles.investedAmt}>${item.amount}</Text>
@@ -365,7 +376,7 @@ export default function FoundryMiningScreen() {
                           </Text>
                         </View>
                         <PopButton style={styles.actionBtn}>
-                          <Text style={styles.actionBtnText}>EXTRACT</Text>
+                          <Text style={styles.actionBtnText}>EXPAND</Text>
                         </PopButton>
                       </View>
                     </LinearGradient>
@@ -437,7 +448,7 @@ const styles = StyleSheet.create({
     height: s(8),
     borderRadius: s(4),
     backgroundColor: '#ff00aa',
-    shadowColor: '#FFF',
+    shadowColor: '#000',
     shadowOpacity: 1,
     shadowRadius: ms(5),
   },
@@ -479,13 +490,14 @@ const styles = StyleSheet.create({
     height: vs(70),
     borderRadius: ms(30),
     overflow: 'hidden',
-    backgroundColor: '#000',
+    backgroundColor: '#ffffff',
     position: 'relative',
-    shadowColor: '#ff00aa',
+  shadowColor: '#000000',
     shadowOffset: { width: 0, height: vs(4) },
-    shadowOpacity: 0.1,
-    shadowRadius: ms(8),
-    elevation: 3,
+    shadowOpacity: 0.2,
+    shadowRadius: ms(10),
+    elevation: 10,
+
   },
   cardGradient: {
     flex: 1,
@@ -500,28 +512,29 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255, 0, 170, 0.3)',
   },
   statLabel: {
-    color: '#ffcce6',
+    color: '#ffffff',
     fontSize: ms(11),
     fontWeight: '600',
-    marginBottom: vs(4),
+    marginBottom: vs(3),
+    opacity: 0.9,
   },
   statValue: {
-    color: '#ff00aa',
+    color: '#ffffff',
     fontSize: ms(18),
     fontWeight: '700',
-    textShadowColor: 'rgba(255, 0, 170, 0.3)',
-    textShadowRadius: ms(5),
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowRadius: ms(10),
   },
 
   /* --- 3️⃣ BOTTOM: LIST --- */
   bottomContainer: {
     flex: 1,
-    backgroundColor: 'rgba(26, 10, 20, 0.8)',
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
     borderTopLeftRadius: ms(35),
     borderTopRightRadius: ms(35),
-    paddingTop: ms(20),
+    paddingTop: ms(10),
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 0, 170, 0.1)',
+    borderTopColor: 'rgba(120, 0, 218, 0.1)',
   },
   listHeader: {
     flexDirection: 'row',
@@ -531,37 +544,46 @@ const styles = StyleSheet.create({
     marginBottom: vs(15),
   },
   listTitle: {
-    color: '#ff00aa',
+    color: '#030303b2',
     fontSize: ms(14),
     fontWeight: '800',
     letterSpacing: ms(1),
-    marginRight: s(10), // Added to push badge away slightly
+    marginRight: s(10),
+     textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowRadius: ms(2),
   },
   badge: {
-    backgroundColor: 'rgba(255, 0, 170, 0.1)',
+    backgroundColor: 'rgba(0, 0, 0, 0.1)',
     paddingHorizontal: s(8),
     paddingVertical: vs(2),
     borderRadius: ms(8),
     borderWidth: 1,
-    borderColor: 'rgba(255, 0, 170, 0.3)',
+    borderColor: 'rgba(0, 0, 0, 0.3)',
   },
   badgeText: {
-    color: '#ff00aa',
+    color: '#000000',
     fontSize: ms(10),
     fontWeight: '700',
+
   },
 
   /* NEW: History Button Styles */
   historyBtn: {
-    backgroundColor: 'rgba(255, 0, 242, 0.81)', // Purple tint
     paddingHorizontal: s(12),
     paddingVertical: vs(6),
     borderRadius: ms(15),
     borderWidth: 1,
-    borderColor: '#ff91ed8a', // Purple border
+    borderColor: 'rgba(255, 255, 255, 0)',
+     shadowColor: '#000000',
+    shadowOffset: { width: 0, height: vs(4) },
+    shadowOpacity: 0.2,
+    shadowRadius: ms(10),
+    elevation: 10,
+
+
   },
   historyBtnText: {
-    color: '#000000',
+    color: '#ffffff',
     fontSize: ms(12),
     fontWeight: 'bold',
     letterSpacing: ms(0.5),
@@ -575,17 +597,19 @@ const styles = StyleSheet.create({
   rigCard: {
     borderRadius: ms(30),
     marginBottom: vs(15),
-    shadowColor: '#ff00aa',
+    shadowColor: '#000000',
     shadowOffset: { width: 0, height: vs(4) },
     shadowOpacity: 0.1,
     shadowRadius: ms(8),
     elevation: 3,
+    
   },
   rigInner: {
     padding: ms(16),
     borderRadius: ms(30),
-    borderWidth: 1,
-    borderColor: 'rgba(255, 0, 170, 0.15)',
+    borderWidth: 0,
+    borderColor: 'rgba(0, 0, 0, 0.15)',
+     backgroundColor: 'rgba(174, 0, 255, 0.71)',
   },
   rigHeader: {
     flexDirection: 'row',
@@ -596,7 +620,7 @@ const styles = StyleSheet.create({
     width: s(30),
     height: s(30),
     borderRadius: s(15),
-    backgroundColor: '#1a0011',
+    backgroundColor: '#ffffff',
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
@@ -607,7 +631,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   rigName: {
-    color: '#ffcce6',
+    color: '#000000',
     fontSize: ms(14),
     fontWeight: '700',
   },
@@ -636,11 +660,11 @@ const styles = StyleSheet.create({
   },
   liquidTrack: {
     height: vs(10),
-    backgroundColor: '#111',
+    backgroundColor: '#f0f0f0',
     borderRadius: ms(10),
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: '#333',
+    borderColor: '#e0e0e0',
     position: 'relative',
   },
   liquidFill: {
@@ -661,33 +685,33 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.05)',
+    borderTopColor: 'rgba(0,0,0,0.05)',
     paddingTop: vs(12),
   },
   yieldLabel: {
-    color: '#ffcce6',
+    color: '#666666',
     fontSize: ms(9),
     marginBottom: vs(2),
   },
   yieldValue: {
-    color: '#fff',
+    color: '#000000',
     fontSize: ms(16),
     fontWeight: '700',
     letterSpacing: ms(0.5),
   },
   actionBtn: {
-    backgroundColor: '#d400ff33',
+    backgroundColor: '#00000091',
     paddingVertical: vs(8),
     paddingHorizontal: s(18),
     borderRadius: ms(20),
-    shadowColor: '#ff00aa',
+    shadowColor: '#000000',
     shadowOpacity: 0.3,
     shadowRadius: ms(5),
-    borderWidth: 1,
+    borderWidth: 0,
     borderColor: '#ff00aa',
   },
   actionBtnText: {
-    color: '#fff',
+    color: '#ffffff',
     fontSize: ms(10),
     fontWeight: '800',
   },

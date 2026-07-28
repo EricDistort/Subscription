@@ -109,7 +109,7 @@ export default function HomeScreen({ navigation }: any) {
       const { data: userData, error } = await supabase
         .from('users')
         .select(
-          'balance, profileImage, username, account_number, direct_business, total_earned, deposits, withdrawal_amount',
+          'balance, profileImage, username, account_number, direct_business, total_earned, deposits, withdrawal_amount, renewal_date',
         )
         .eq('id', user.id)
         .single();
@@ -172,10 +172,46 @@ export default function HomeScreen({ navigation }: any) {
     navigation.navigate('ProfileScreen');
   };
 
+  // --- SUBSCRIPTION CHECKER ---
+  const checkSubscriptionAndNavigate = (targetScreen: string) => {
+    const renewalDateStr = user?.renewal_date;
+
+    if (!renewalDateStr) {
+      // No date found in database
+      navigation.navigate('SubscriptionScreen');
+      return;
+    }
+
+    // Parse DD/MM/YYYY format
+    const parts = renewalDateStr.split('/');
+    let renewalDate;
+    if (parts.length === 3) {
+      renewalDate = new Date(
+        parseInt(parts[2]),
+        parseInt(parts[1]) - 1,
+        parseInt(parts[0]),
+      );
+    } else {
+      // Fallback just in case it's another standard format
+      renewalDate = new Date(renewalDateStr);
+    }
+
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0); // Reset time to midnight for an accurate day comparison
+
+    if (renewalDate < currentDate) {
+      // Date has crossed
+      navigation.navigate('SubscriptionScreen');
+    } else {
+      // Valid subscription
+      navigation.navigate(targetScreen);
+    }
+  };
+
   return (
     <ScreenWrapper>
       <LinearGradient
-        colors={['#000000', '#0a000e', '#170020']}
+        colors={['#ffffff', '#fafafa', '#f0f0f0']}
         style={{ flex: 1 }}
       >
         <ScrollView
@@ -186,7 +222,7 @@ export default function HomeScreen({ navigation }: any) {
               onRefresh={onRefresh}
               tintColor="#ff00aa"
               colors={['#ff00aa', '#9000ff']}
-              progressBackgroundColor="#1c140d"
+              progressBackgroundColor="#fff"
             />
           }
           showsVerticalScrollIndicator={false}
@@ -247,7 +283,7 @@ export default function HomeScreen({ navigation }: any) {
                     <View style={styles.progressBarTrack}>
                       {/* The Glowing Fill */}
                       <LinearGradient
-                        colors={['rgba(0,0,0,0.5)', '#ffffff']}
+                        colors={['rgba(255,255,255,0.5)', '#ffffff']}
                         start={{ x: 0, y: 0 }}
                         end={{ x: 1, y: 0 }}
                         style={{
@@ -261,7 +297,7 @@ export default function HomeScreen({ navigation }: any) {
                     {/* Tier Text below bar (Matching old styling) */}
                     <View style={styles.limitTextRow}>
                       <Text style={styles.limitText}>
-                        Daily Now{' '}
+                        Earning Now{' '}
                         <Text style={{ color: '#ffffff', fontWeight: 'bold' }}>
                           ${currentDaily.toFixed(2)}
                         </Text>
@@ -285,22 +321,26 @@ export default function HomeScreen({ navigation }: any) {
                       {
                         name: 'Deposit',
                         icon: require('../homeMedia/deposit.webp'),
-                        onPress: () => navigation.navigate('DepositMoney'),
+                        onPress: () =>
+                          checkSubscriptionAndNavigate('DepositMoney'),
                       },
                       {
                         name: 'Rewards',
                         icon: require('../homeMedia/send.webp'),
-                        onPress: () => navigation.navigate('StoreMain'),
+                        onPress: () =>
+                          checkSubscriptionAndNavigate('StoreMain'),
                       },
                       {
                         name: 'Social',
                         icon: require('../homeMedia/recieve.webp'),
-                        onPress: () => navigation.navigate('RecieveMoney'),
+                        onPress: () =>
+                          checkSubscriptionAndNavigate('RecieveMoney'),
                       },
                       {
                         name: 'Withdraw',
                         icon: require('../homeMedia/withdraw.webp'),
-                        onPress: () => navigation.navigate('WithdrawalMoney'),
+                        onPress: () =>
+                          checkSubscriptionAndNavigate('WithdrawalMoney'),
                       },
                     ].map((btn, index) => (
                       <PopScaleButton
@@ -320,16 +360,18 @@ export default function HomeScreen({ navigation }: any) {
             {/* Direct Business & Partner Section */}
             <View style={{ flexDirection: 'row', gap: s(8) }}>
               <PopScaleButton
-                onPress={() => navigation.navigate('RecieveMoneyScreen')}
+                onPress={() =>
+                  navigation.navigate('Plan', {
+                    url: partnerData.url,
+                    title: partnerData.name,
+                  })
+                }
               >
-                <Text style={styles.withdrawableText}>
-                  Total Network{' '}
-                  <Text style={styles.boldAmount}>
-                    ${user?.direct_business || 0}
-                  </Text>
+                <Text style={styles.withdrawabledText}>
+                  {' '}
+                  <Text style={styles.boldedAmount}>3 Step Roadmap</Text>
                 </Text>
               </PopScaleButton>
-
               <PopScaleButton
                 onPress={() =>
                   navigation.navigate('Plan', {
@@ -338,9 +380,9 @@ export default function HomeScreen({ navigation }: any) {
                   })
                 }
               >
-                <Text style={styles.withdrawableText}>
+                <Text style={styles.withdrawabledText}>
                   {' '}
-                  <Text style={styles.boldAmount}>Map</Text>
+                  <Text style={styles.boldedAmount}>Show</Text>
                 </Text>
               </PopScaleButton>
             </View>
@@ -350,7 +392,7 @@ export default function HomeScreen({ navigation }: any) {
               <View style={styles.sectionHeader}>
                 <Text style={styles.transactionsTitle}>Running Nodes</Text>
                 <LinearGradient
-                  colors={['#ff00aa', '#ff00aa00']}
+                  colors={['#030303b2', '#ff00aa00']}
                   start={{ x: 0, y: 0.5 }}
                   end={{ x: 1, y: 0.5 }}
                   style={styles.slickLine}
@@ -368,18 +410,20 @@ export default function HomeScreen({ navigation }: any) {
                     }}
                     showsVerticalScrollIndicator={true}
                     nestedScrollEnabled={true}
-                    indicatorStyle="white"
+                    indicatorStyle="black"
                   >
                     {miningRigs.map(rig => (
                       <PopScaleButton
                         key={rig.id}
                         style={styles.miningCard}
-                        onPress={() => navigation.navigate('SendMoney')}
+                        onPress={() =>
+                          checkSubscriptionAndNavigate('SendMoney')
+                        }
                       >
                         <LinearGradient
                           colors={[
-                            'rgba(20, 20, 20, 0.9)',
-                            'rgba(10, 15, 30, 0.95)',
+                            'rgba(250, 250, 250, 0.9)',
+                            'rgba(240, 240, 240, 0.95)',
                           ]}
                           style={styles.miningCardInner}
                         >
@@ -419,7 +463,7 @@ export default function HomeScreen({ navigation }: any) {
                           </View>
                           {/* Yield */}
                           <View style={styles.rigYieldBox}>
-                            <Text style={styles.yieldLabel}>CAPTURE</Text>
+                            <Text style={styles.yieldLabel}>Cerculate</Text>
                             <Text style={styles.yieldValue}>{rig.yield}</Text>
                           </View>
                         </LinearGradient>
@@ -456,10 +500,22 @@ const styles = StyleSheet.create({
     marginTop: vs(25),
   },
   userInfo: { flex: 1 },
-  name: { fontSize: ms(18), fontWeight: 'bold', color: '#ff00aa' },
-  accountNumber: { fontSize: ms(14), color: '#ffffff49', marginTop: vs(2) },
+  name: { fontSize: ms(18), fontWeight: 'bold', color: '#030303c0' },
+  accountNumber: {
+    fontSize: ms(14),
+    color: 'rgba(0,0,0,0.4)',
+    marginTop: vs(2),
+  },
   editButton: { padding: ms(8) },
-  editImage: { width: s(30), height: s(30) },
+  editImage: {
+    width: s(30),
+    height: s(30),
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: vs(4) },
+    shadowOpacity: 0.2,
+    shadowRadius: ms(10),
+    elevation: 10,
+  },
 
   // Avatar Styles
   avatarContainer: {
@@ -480,10 +536,10 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     marginTop: vs(10),
     borderRadius: ms(50),
-    backgroundColor: '#000',
-    shadowColor: '#ff00aa',
+    backgroundColor: '#fff',
+    shadowColor: '#000000',
     shadowOffset: { width: 0, height: vs(4) },
-    shadowOpacity: 1,
+    shadowOpacity: 0.2,
     shadowRadius: ms(10),
     elevation: 10,
     borderColor: '#ff82d3',
@@ -512,12 +568,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#ffe6f9',
     marginBottom: vs(5),
-    textShadowColor: 'rgba(255, 0, 170, 0.6)',
+    textShadowColor: 'rgba(255, 0, 170, 0.3)',
     textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: ms(15),
+    textShadowRadius: ms(10),
   },
 
-  // GLOWING PROGRESS BAR STYLES
   progressContainer: {
     width: '97%',
     marginBottom: vs(15),
@@ -526,7 +581,7 @@ const styles = StyleSheet.create({
   progressBarTrack: {
     width: '100%',
     height: vs(8),
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: 'rgba(0,0,0,0.1)',
     borderRadius: ms(10),
     borderWidth: 1,
     borderColor: 'rgba(255, 0, 170, 0.31)',
@@ -540,7 +595,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: s(2),
   },
   limitText: {
-    color: 'rgba(255,255,255,0.6)',
+    color: 'rgba(255,255,255,0.8)',
     fontSize: ms(10),
     fontWeight: '600',
   },
@@ -562,10 +617,15 @@ const styles = StyleSheet.create({
     width: s(50),
     height: s(50),
     resizeMode: 'contain',
-    backgroundColor: '#0a151a',
+    backgroundColor: '#fff',
     borderRadius: ms(100),
     borderWidth: 2,
     borderColor: 'rgba(255, 0, 170, 0.32)',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: vs(4) },
+    shadowOpacity: 0.2,
+    shadowRadius: ms(10),
+    elevation: 10,
   },
   buttonLabel: { fontSize: ms(12), color: '#ffe6f9', textAlign: 'center' },
 
@@ -573,15 +633,37 @@ const styles = StyleSheet.create({
     marginTop: vs(10),
     marginBottom: vs(3),
     fontSize: ms(13),
-    color: '#000000',
+    color: 'rgba(255, 38, 219, 0.85)',
     textAlign: 'center',
-    backgroundColor: 'rgba(255, 0, 212, 0.89)',
+    backgroundColor: 'rgba(255, 0, 212, 0.07)',
     paddingHorizontal: s(10),
     paddingVertical: vs(2),
     borderRadius: ms(20),
-    
+    borderWidth: 1,
+    borderColor: 'rgba(255, 0, 212, 0.89)',
   },
-  boldAmount: { fontWeight: 'bold', fontSize: ms(16), color: '#000000' },
+  withdrawabledText: {
+    marginTop: vs(10),
+    marginBottom: vs(3),
+    fontSize: ms(13),
+    color: '#000000',
+    textAlign: 'center',
+    backgroundColor: 'rgba(221, 0, 184, 0.89)',
+    paddingHorizontal: s(10),
+    paddingVertical: vs(2),
+    borderRadius: ms(20),
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: vs(4) },
+    shadowOpacity: 0.2,
+    shadowRadius: ms(10),
+    elevation: 10,
+  },
+  boldAmount: {
+    fontWeight: 'bold',
+    fontSize: ms(16),
+    color: 'rgb(255, 0, 212)',
+  },
+  boldedAmount: { fontWeight: '500', fontSize: ms(14), color: '#ffffff' },
 
   thirdContainer: {
     width: '98%',
@@ -598,7 +680,7 @@ const styles = StyleSheet.create({
   transactionsTitle: {
     fontSize: ms(18),
     fontWeight: 'bold',
-    color: '#ff00aa',
+    color: '#030303b2',
   },
   slickLine: {
     flex: 1,
@@ -614,8 +696,8 @@ const styles = StyleSheet.create({
     marginBottom: vs(10),
     width: '100%',
     overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 0, 170, 0.15)',
+    borderWidth: 0,
+    borderColor: 'rgba(255, 0, 170, 0)',
   },
   miningCardInner: {
     flexDirection: 'row',
@@ -623,6 +705,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: s(12),
     width: '100%',
+    backgroundColor: 'rgba(174, 0, 255, 0.71)',
   },
   rigInfoLeft: {
     flexDirection: 'row',
@@ -641,7 +724,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255, 0, 170, 0.2)',
   },
   rigName: {
-    color: '#ffe6f9',
+    color: '#030303b2',
     fontWeight: '700',
     fontSize: ms(12),
   },
@@ -655,16 +738,16 @@ const styles = StyleSheet.create({
     width: '30%',
     alignItems: 'flex-start',
     borderLeftWidth: 1,
-    borderLeftColor: 'rgba(255,255,255,0.1)',
+    borderLeftColor: 'rgba(0,0,0,0.1)',
     paddingLeft: s(12),
   },
   statLabel: {
-    color: '#888',
+    color: '#666',
     fontSize: ms(8),
     fontWeight: '700',
   },
   statValue: {
-    color: '#ccc',
+    color: '#333',
     fontSize: ms(11),
     fontFamily: 'monospace',
     fontWeight: '600',
@@ -674,7 +757,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   yieldLabel: {
-    color: '#ffe6f9',
+    color: '#333',
     fontSize: ms(9),
     fontWeight: '800',
     marginBottom: vs(2),
@@ -683,12 +766,12 @@ const styles = StyleSheet.create({
     color: '#ff00aa',
     fontSize: ms(16),
     fontWeight: '700',
-    textShadowColor: 'rgba(255, 0, 170, 0.5)',
+    textShadowColor: 'rgba(255, 0, 170, 0.2)',
     textShadowRadius: 5,
   },
   progressBarBg: {
     height: vs(3),
     width: '100%',
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: 'rgba(0,0,0,0.1)',
   },
 });
